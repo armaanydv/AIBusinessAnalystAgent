@@ -1,10 +1,9 @@
 from fastapi import APIRouter
+from app.services.upload_service import upload_service
 
 router = APIRouter()
 
 
 @router.post("/upload")
 def upload_pdf():
-    return {
-        "message": "Upload endpoint is working."
-    }
+    return upload_service.upload()
