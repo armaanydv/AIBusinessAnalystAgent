@@ -6,14 +6,9 @@ class IngestionService:
     def __init__(self):
         self.parser = DoclingParser()
 
-    def ingest(self):
+    def ingest(self, file_path: str):
 
-        structured_document = self.parser.parse("dummy.pdf")
-
-        return {
-            "message": "Document ingested successfully.",
-            "document": structured_document.text
-        }
+        return self.parser.parse(file_path)
 
 
 ingestion_service = IngestionService()
