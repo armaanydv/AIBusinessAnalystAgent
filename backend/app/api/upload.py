@@ -1,9 +1,9 @@
 from fastapi import APIRouter
-from app.services.upload_service import upload_service
+from backend.app.services import document_service
 
 router = APIRouter()
 
 
 @router.post("/upload")
 def upload_pdf():
-    return upload_service.upload()
+    return document_service.upload()

@@ -2,7 +2,7 @@ from app.validators.upload_validator import validate_upload
 from app.ingestion.ingestion_service import ingestion_service
 
 
-class UploadService:
+class DocumentService:
 
     def upload(self):
 
@@ -14,4 +14,4 @@ class UploadService:
         return ingestion_service.ingest()
 
 
-upload_service = UploadService()
+document_service = DocumentService()
