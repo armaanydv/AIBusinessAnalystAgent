@@ -1,4 +1,5 @@
 from app.ingestion.ingestion_service import ingestion_service
+from app.models.table import Table
 
 
 def main():
@@ -19,15 +20,55 @@ def main():
 
     for page in document.pages:
 
-        print(f"\nPage {page.page_number}")
-        print("-" * 40)
+        print(f"\n\nPage {page.page_number}")
+        print("=" * 80)
 
         for element in page.elements:
 
-            print(
-                f"{type(element).__name__:12} | "
-                f"{getattr(element, 'text', '')}"
-            )
+            # -----------------------------
+            # Tables
+            # -----------------------------
+            if isinstance(element, Table):
+
+                print("\nTABLE")
+                print("-" * 80)
+
+                print(f"Rows    : {element.num_rows}")
+                print(f"Columns : {element.num_columns}")
+
+                if element.caption:
+                    print(f"Caption : {element.caption}")
+
+                print("\nHeaders")
+                print("-" * 80)
+                print(element.headers)
+
+                print("\nGrid")
+                print("-" * 80)
+
+                for row in element.rows:
+                    print(row)
+
+                print("\nRaw Text")
+                print("-" * 80)
+                print(element.raw_text)
+
+                print("-" * 80)
+
+            # -----------------------------
+            # Text / Heading
+            # -----------------------------
+            else:
+
+                text = getattr(element, "text", "")
+
+                print(
+                    f"{type(element).__name__:12} | {text}"
+                )
+
+        print("\n")
+        print(f"Total Elements : {len(page.elements)}")
+        print("=" * 80)
 
 
 if __name__ == "__main__":

@@ -5,6 +5,7 @@ from app.models.heading import Heading
 from app.models.metadata import Metadata
 from app.models.page import Page
 from app.models.structured_document import StructuredDocument
+from app.models.table import Table
 from app.models.text_block import TextBlock
 
 
@@ -12,6 +13,10 @@ class DoclingMapper:
     """
     Maps a DoclingDocument into AIBA's StructuredDocument.
     """
+
+    # ==========================================================
+    # Public API
+    # ==========================================================
 
     def map(self, docling_document) -> StructuredDocument:
 
@@ -21,11 +26,16 @@ class DoclingMapper:
         page_lookup = self._build_page_lookup(pages)
 
         self._map_texts(docling_document, page_lookup)
+        self._map_tables(docling_document, page_lookup)
 
         return StructuredDocument(
             metadata=metadata,
             pages=pages,
         )
+
+    # ==========================================================
+    # Metadata Mapping
+    # ==========================================================
 
     def _map_metadata(self, docling_document) -> Metadata:
 
@@ -34,6 +44,10 @@ class DoclingMapper:
             title=getattr(docling_document, "name", None),
             total_pages=docling_document.num_pages(),
         )
+
+    # ==========================================================
+    # Page Mapping
+    # ==========================================================
 
     def _map_pages(self, docling_document) -> list[Page]:
 
@@ -57,7 +71,24 @@ class DoclingMapper:
             for page in pages
         }
 
-    def _map_texts(self, docling_document, page_lookup) -> None:
+    # ==========================================================
+    # Shared Helpers
+    # ==========================================================
+
+    def _create_bounding_box(self, bbox):
+
+        return BoundingBox(
+            left=bbox.l,
+            top=bbox.t,
+            right=bbox.r,
+            bottom=bbox.b,
+        )
+
+    # ==========================================================
+    # Text Mapping
+    # ==========================================================
+
+    def _map_texts(self, docling_document, page_lookup):
 
         reading_order = 0
 
@@ -68,12 +99,7 @@ class DoclingMapper:
 
             prov = text_item.prov[0]
 
-            bbox = BoundingBox(
-                left=prov.bbox.l,
-                top=prov.bbox.t,
-                right=prov.bbox.r,
-                bottom=prov.bbox.b,
-            )
+            bbox = self._create_bounding_box(prov.bbox)
 
             if text_item.label.value == "section_header":
 
@@ -97,3 +123,97 @@ class DoclingMapper:
             page_lookup[prov.page_no].elements.append(element)
 
             reading_order += 1
+
+    # ==========================================================
+    # Table Mapping
+    # ==========================================================
+
+    def _map_tables(self, docling_document, page_lookup):
+
+        reading_order = 0
+
+        for table in docling_document.tables:
+
+            if not table.prov:
+              continue
+
+            element = self._create_table(
+            table,
+            reading_order
+        )
+
+            page_lookup[element.page_number].elements.append(element)
+
+            reading_order += 1
+
+    def _create_table(self, table, reading_order):
+
+       prov = table.prov[0]
+
+       bbox = self._create_bounding_box(prov.bbox)
+
+    # ---------------------------------------------------
+    # Build exact visual grid
+    # ---------------------------------------------------
+
+       rows = [
+        [""] * table.data.num_cols
+        for _ in range(table.data.num_rows)
+    ]
+
+       for cell in table.data.table_cells:
+
+          for r in range(
+            cell.start_row_offset_idx,
+            cell.start_row_offset_idx + cell.row_span
+        ):
+
+            for c in range(
+                cell.start_col_offset_idx,
+                cell.start_col_offset_idx + cell.col_span
+            ):
+
+                rows[r][c] = cell.text
+
+    # ---------------------------------------------------
+    # Headers
+    # ---------------------------------------------------
+
+       headers = rows[0] if rows else []
+
+    # ---------------------------------------------------
+    # Raw Text
+    # ---------------------------------------------------
+
+       raw_text = "\n".join(
+        [
+            " | ".join(row)
+            for row in rows
+        ]
+    )
+
+    # ---------------------------------------------------
+    # Caption
+    # ---------------------------------------------------
+
+       caption = None
+
+       if table.captions:
+ 
+             caption = table.captions[0].text
+
+    # ---------------------------------------------------
+    # Return Table
+    # ---------------------------------------------------
+
+       return Table(
+        page_number=prov.page_no,
+        bounding_box=bbox,
+        reading_order=reading_order,
+        headers=headers,
+        rows=rows,
+        raw_text=raw_text,
+        caption=caption,
+        num_rows=table.data.num_rows,
+        num_columns=table.data.num_cols,
+    )
