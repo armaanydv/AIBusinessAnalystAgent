@@ -1,75 +1,26 @@
-from app.ingestion.ingestion_service import ingestion_service
-from app.models.table import Table
+from docling.document_converter import DocumentConverter
 
+converter = DocumentConverter()
+result = converter.convert("sample.pdf")
 
-def main():
+doc = result.document
 
-    document = ingestion_service.ingest("sample.pdf")
+for index, item in enumerate(doc.iterate_items()):
 
-    print("\n==============================")
-    print("STRUCTURED DOCUMENT")
-    print("==============================")
+    # iterate_items returns (item, level)
+    node, level = item
 
-    print(f"Title       : {document.metadata.title}")
-    print(f"Pages       : {document.metadata.total_pages}")
-    print(f"Document ID : {document.metadata.document_id}")
+    print("=" * 80)
+    print(f"Index : {index}")
+    print(f"Level : {level}")
+    print(f"Type  : {type(node).__name__}")
+    print(f"Label : {node.label}")
 
-    print("\n==============================")
-    print("PAGE CONTENT")
-    print("==============================")
+    if node.prov:
+        print(f"Page  : {node.prov[0].page_no}")
 
-    for page in document.pages:
+    if hasattr(node, "text"):
+        print(f"Text  : {node.text[:80]}")
 
-        print(f"\n\nPage {page.page_number}")
-        print("=" * 80)
-
-        for element in page.elements:
-
-            # -----------------------------
-            # Tables
-            # -----------------------------
-            if isinstance(element, Table):
-
-                print("\nTABLE")
-                print("-" * 80)
-
-                print(f"Rows    : {element.num_rows}")
-                print(f"Columns : {element.num_columns}")
-
-                if element.caption:
-                    print(f"Caption : {element.caption}")
-
-                print("\nHeaders")
-                print("-" * 80)
-                print(element.headers)
-
-                print("\nGrid")
-                print("-" * 80)
-
-                for row in element.rows:
-                    print(row)
-
-                print("\nRaw Text")
-                print("-" * 80)
-                print(element.raw_text)
-
-                print("-" * 80)
-
-            # -----------------------------
-            # Text / Heading
-            # -----------------------------
-            else:
-
-                text = getattr(element, "text", "")
-
-                print(
-                    f"{type(element).__name__:12} | {text}"
-                )
-
-        print("\n")
-        print(f"Total Elements : {len(page.elements)}")
-        print("=" * 80)
-
-
-if __name__ == "__main__":
-    main()
+    if index == 20:
+        break
