@@ -1,26 +1,44 @@
+from collections import defaultdict
+from pprint import pprint
+
 from docling.document_converter import DocumentConverter
+
 
 converter = DocumentConverter()
 result = converter.convert("sample.pdf")
 
 doc = result.document
 
-for index, item in enumerate(doc.iterate_items()):
+seen = defaultdict(bool)
 
-    # iterate_items returns (item, level)
-    node, level = item
+for node, level in doc.iterate_items():
 
-    print("=" * 80)
-    print(f"Index : {index}")
-    print(f"Level : {level}")
-    print(f"Type  : {type(node).__name__}")
-    print(f"Label : {node.label}")
+    class_name = type(node).__name__
 
-    if node.prov:
-        print(f"Page  : {node.prov[0].page_no}")
+    if seen[class_name]:
+        continue
 
-    if hasattr(node, "text"):
-        print(f"Text  : {node.text[:80]}")
+    seen[class_name] = True
 
-    if index == 20:
-        break
+    print("\n")
+    print("=" * 120)
+    print(f"TYPE  : {class_name}")
+    print(f"LEVEL : {level}")
+    print("=" * 120)
+
+    print("\nPUBLIC ATTRIBUTES\n")
+
+    for attr in sorted(dir(node)):
+
+        if attr.startswith("_"):
+            continue
+
+        try:
+            value = getattr(node, attr)
+
+            print(f"{attr}")
+            pprint(value)
+            print()
+
+        except Exception as e:
+            print(f"{attr} : <ERROR : {e}>")
