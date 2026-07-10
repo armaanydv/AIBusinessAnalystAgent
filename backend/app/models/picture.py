@@ -13,3 +13,5 @@ class Picture(DocumentElement):
     caption: Optional[str] = None
 
     alt_text: Optional[str] = None
+
+    has_image: bool = False

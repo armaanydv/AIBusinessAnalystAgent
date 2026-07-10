@@ -26,7 +26,7 @@ structured_document = mapper.map(docling_document)
 
 
 # ==========================================================
-# Print Result
+# Print Metadata
 # ==========================================================
 
 print("\n")
@@ -36,6 +36,10 @@ print("=" * 100)
 
 pprint(structured_document.metadata.model_dump())
 
+
+# ==========================================================
+# Print Pages & Elements
+# ==========================================================
 
 for page in structured_document.pages:
 
@@ -50,12 +54,31 @@ for page in structured_document.pages:
 
         print(f"Type           : {type(element).__name__}")
         print(f"Reading Order  : {element.reading_order}")
+        print(f"Page           : {element.page_number}")
 
         if hasattr(element, "text"):
-            print(f"Text           : {element.text[:100]}")
+            print(f"Text           : {element.text[:120]}")
 
         if hasattr(element, "headers"):
             print(f"Headers        : {element.headers}")
+
+        if hasattr(element, "caption"):
+            print(f"Caption        : {element.caption}")
+
+        if hasattr(element, "marker"):
+            print(f"Marker         : {element.marker}")
+
+        if hasattr(element, "enumerated"):
+            print(f"Enumerated     : {element.enumerated}")
+
+        if hasattr(element, "hyperlink"):
+            print(f"Hyperlink      : {element.hyperlink}")
+
+        if hasattr(element, "image_path"):
+            print(f"Image Path     : {element.image_path}")
+
+        if hasattr(element, "has_image"):
+            print(f"Has Image      : {element.has_image}")
 
         print(f"Bounding Box   : {element.bounding_box}")
 
