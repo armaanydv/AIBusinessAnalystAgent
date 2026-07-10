@@ -1,27 +1,31 @@
 from uuid import uuid4
 
-from app.ingestion.mappers.item_mapper_factory import ItemMapperFactory
+from app.ingestion.mappers.item_mappers.item_mapper_factory import ItemMapperFactory
 from app.models.metadata import Metadata
 from app.models.page import Page
 from app.models.structured_document import StructuredDocument
 
 
 class DoclingMapper:
+    """
+    Maps a DoclingDocument into AIBA's StructuredDocument.
+    """
 
     def __init__(self):
 
         self.factory = ItemMapperFactory()
 
-    def map(self, docling_document):
+    # ==========================================================
+    # Public API
+    # ==========================================================
+
+    def map(self, docling_document) -> StructuredDocument:
 
         metadata = self._map_metadata(docling_document)
 
         pages = self._map_pages(docling_document)
 
-        page_lookup = {
-            page.page_number: page
-            for page in pages
-        }
+        page_lookup = self._build_page_lookup(pages)
 
         reading_order = 0
 
@@ -41,7 +45,9 @@ class DoclingMapper:
             if element is None:
                 continue
 
-            page_lookup[element.page_number].elements.append(element)
+            page_lookup[element.page_number].elements.append(
+                element
+            )
 
             reading_order += 1
 
@@ -50,7 +56,11 @@ class DoclingMapper:
             pages=pages,
         )
 
-    def _map_metadata(self, docling_document):
+    # ==========================================================
+    # Metadata Mapping
+    # ==========================================================
+
+    def _map_metadata(self, docling_document) -> Metadata:
 
         return Metadata(
             document_id=str(uuid4()),
@@ -58,9 +68,36 @@ class DoclingMapper:
             total_pages=docling_document.num_pages(),
         )
 
-    def _map_pages(self, docling_document):
+    # ==========================================================
+    # Page Mapping
+    # ==========================================================
 
-        return [
-            Page(page_number=i)
-            for i in range(1, docling_document.num_pages() + 1)
-        ]
+    def _map_pages(self, docling_document) -> list[Page]:
+
+        pages = []
+
+        total_pages = docling_document.num_pages()
+
+        for page_number in range(1, total_pages + 1):
+
+            pages.append(
+                Page(
+                    page_number=page_number,
+                )
+            )
+
+        return pages
+
+    # ==========================================================
+    # Helpers
+    # ==========================================================
+
+    def _build_page_lookup(
+        self,
+        pages: list[Page],
+    ) -> dict[int, Page]:
+
+        return {
+            page.page_number: page
+            for page in pages
+        }

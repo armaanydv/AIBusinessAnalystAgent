@@ -1,44 +1,62 @@
-from collections import defaultdict
 from pprint import pprint
 
 from docling.document_converter import DocumentConverter
 
+from app.ingestion.mappers.docling_mapper import DoclingMapper
+
+
+# ==========================================================
+# Parse PDF
+# ==========================================================
 
 converter = DocumentConverter()
+
 result = converter.convert("sample.pdf")
 
-doc = result.document
+docling_document = result.document
 
-seen = defaultdict(bool)
 
-for node, level in doc.iterate_items():
+# ==========================================================
+# Map to AIBA
+# ==========================================================
 
-    class_name = type(node).__name__
+mapper = DoclingMapper()
 
-    if seen[class_name]:
-        continue
+structured_document = mapper.map(docling_document)
 
-    seen[class_name] = True
+
+# ==========================================================
+# Print Result
+# ==========================================================
+
+print("\n")
+print("=" * 100)
+print("DOCUMENT METADATA")
+print("=" * 100)
+
+pprint(structured_document.metadata.model_dump())
+
+
+for page in structured_document.pages:
 
     print("\n")
-    print("=" * 120)
-    print(f"TYPE  : {class_name}")
-    print(f"LEVEL : {level}")
-    print("=" * 120)
+    print("=" * 100)
+    print(f"PAGE {page.page_number}")
+    print("=" * 100)
 
-    print("\nPUBLIC ATTRIBUTES\n")
+    for element in page.elements:
 
-    for attr in sorted(dir(node)):
+        print("-" * 80)
 
-        if attr.startswith("_"):
-            continue
+        print(f"Type           : {type(element).__name__}")
+        print(f"Reading Order  : {element.reading_order}")
 
-        try:
-            value = getattr(node, attr)
+        if hasattr(element, "text"):
+            print(f"Text           : {element.text[:100]}")
 
-            print(f"{attr}")
-            pprint(value)
-            print()
+        if hasattr(element, "headers"):
+            print(f"Headers        : {element.headers}")
 
-        except Exception as e:
-            print(f"{attr} : <ERROR : {e}>")
+        print(f"Bounding Box   : {element.bounding_box}")
+
+        print()
