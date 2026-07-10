@@ -53,6 +53,8 @@ for page in structured_document.pages:
         print("-" * 80)
 
         print(f"Type           : {type(element).__name__}")
+        print(f"ID             : {element.id}")
+        print(f"Docling Ref    : {element.docling_ref}")
         print(f"Reading Order  : {element.reading_order}")
         print(f"Page           : {element.page_number}")
 
@@ -83,3 +85,28 @@ for page in structured_document.pages:
         print(f"Bounding Box   : {element.bounding_box}")
 
         print()
+
+
+# ==========================================================
+# Print Document Index
+# ==========================================================
+
+print("\n")
+print("=" * 100)
+print("DOCUMENT INDEX")
+print("=" * 100)
+
+if structured_document.index is not None:
+
+    print(f"Elements Indexed     : {len(structured_document.index.by_element_id)}")
+    print(f"Docling Refs Indexed : {len(structured_document.index.by_docling_ref)}")
+    print(f"Pages Indexed        : {len(structured_document.index.by_page)}")
+
+    print("\nIndexed Pages:")
+
+    for page_number, elements in structured_document.index.by_page.items():
+        print(f"  Page {page_number}: {len(elements)} elements")
+
+else:
+
+    print("No document index found.")

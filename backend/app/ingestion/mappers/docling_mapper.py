@@ -1,5 +1,5 @@
 from uuid import uuid4
-
+from app.document.indexing.index_builder import IndexBuilder
 from app.ingestion.mappers.item_mappers.item_mapper_factory import ItemMapperFactory
 from app.models.metadata import Metadata
 from app.models.page import Page
@@ -51,10 +51,14 @@ class DoclingMapper:
 
             reading_order += 1
 
-        return StructuredDocument(
-            metadata=metadata,
-            pages=pages,
-        )
+        document = StructuredDocument(
+    metadata=metadata,
+    pages=pages,
+)
+
+        document.index = IndexBuilder().build(document)
+
+        return document
 
     # ==========================================================
     # Metadata Mapping

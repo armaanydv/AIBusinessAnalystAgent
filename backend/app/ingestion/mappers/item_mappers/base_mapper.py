@@ -32,12 +32,13 @@ class BaseMapper(ABC):
         )
 
     @classmethod
-    def create_common_fields(cls, prov, reading_order):
+    def create_common_fields(cls, node, prov, reading_order):
         """
         Create fields common to every document element.
         """
 
         return {
+            "docling_ref": node.self_ref,
             "page_number": prov.page_no,
             "bounding_box": cls.create_bounding_box(prov),
             "reading_order": reading_order,

@@ -17,7 +17,7 @@ class ListMapper(BaseMapper):
             hyperlink = str(node.hyperlink)
 
         return ListItem(
-            **self.create_common_fields(prov, reading_order),
+            **self.create_common_fields(node,prov, reading_order),
             text=node.text,
             marker=node.marker,
             enumerated=node.enumerated,

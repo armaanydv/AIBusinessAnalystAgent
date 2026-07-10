@@ -17,7 +17,7 @@ class PictureMapper(BaseMapper):
             caption = str(node.captions[0])
 
         return Picture(
-            **self.create_common_fields(prov, reading_order),
+            **self.create_common_fields(node,prov, reading_order),
             image_path=None,
             caption=caption,
             alt_text=None,

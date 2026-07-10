@@ -15,7 +15,7 @@ class HeadingMapper(BaseMapper):
         prov = node.prov[0]
 
         return Heading(
-            **self.create_common_fields(
+            **self.create_common_fields(node,
                 prov,
                 reading_order,
             ),

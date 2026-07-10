@@ -46,7 +46,7 @@ class TableMapper(BaseMapper):
             caption = node.captions[0].text
 
         return Table(
-            **self.create_common_fields(
+            **self.create_common_fields(node,
                 prov,
                 reading_order,
             ),
