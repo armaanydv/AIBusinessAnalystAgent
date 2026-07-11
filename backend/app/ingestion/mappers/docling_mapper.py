@@ -4,6 +4,8 @@ from app.ingestion.mappers.item_mappers.item_mapper_factory import ItemMapperFac
 from app.models.metadata import Metadata
 from app.models.page import Page
 from app.models.structured_document import StructuredDocument
+from app.document.indexing.index_builder import IndexBuilder
+from app.document.relationships.relationship_builder import RelationshipBuilder
 
 
 class DoclingMapper:
@@ -56,7 +58,14 @@ class DoclingMapper:
     pages=pages,
 )
 
+# Build indexes
         document.index = IndexBuilder().build(document)
+
+# Build relationship graph
+        document.relationship_graph = RelationshipBuilder().build(
+    docling_document,
+    document,
+)
 
         return document
 

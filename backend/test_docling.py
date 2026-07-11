@@ -1,3 +1,4 @@
+from collections import Counter
 from pprint import pprint
 
 from docling.document_converter import DocumentConverter
@@ -38,7 +39,7 @@ pprint(structured_document.metadata.model_dump())
 
 
 # ==========================================================
-# Print Pages & Elements
+# Print Pages
 # ==========================================================
 
 for page in structured_document.pages:
@@ -88,7 +89,7 @@ for page in structured_document.pages:
 
 
 # ==========================================================
-# Print Document Index
+# Document Index
 # ==========================================================
 
 print("\n")
@@ -96,17 +97,87 @@ print("=" * 100)
 print("DOCUMENT INDEX")
 print("=" * 100)
 
-if structured_document.index is not None:
+index = structured_document.index
 
-    print(f"Elements Indexed     : {len(structured_document.index.by_element_id)}")
-    print(f"Docling Refs Indexed : {len(structured_document.index.by_docling_ref)}")
-    print(f"Pages Indexed        : {len(structured_document.index.by_page)}")
+if index is not None:
 
-    print("\nIndexed Pages:")
+    print(f"Elements Indexed     : {len(index.by_element_id)}")
+    print(f"Docling Refs Indexed : {len(index.by_docling_ref)}")
+    print(f"Pages Indexed        : {len(index.by_page)}")
 
-    for page_number, elements in structured_document.index.by_page.items():
-        print(f"  Page {page_number}: {len(elements)} elements")
+    print("\nIndexed Pages")
+
+    for page_number, elements in index.by_page.items():
+        print(f"Page {page_number}: {len(elements)} elements")
 
 else:
 
     print("No document index found.")
+
+
+# ==========================================================
+# Relationship Graph
+# ==========================================================
+
+print("\n")
+print("=" * 100)
+print("RELATIONSHIP GRAPH")
+print("=" * 100)
+
+graph = structured_document.relationship_graph
+
+if graph is not None:
+
+    print(f"Total Relationships : {len(graph.relationships)}")
+
+    counts = Counter(
+        relationship.relationship_type.value
+        for relationship in graph.relationships
+    )
+
+    print("\nRelationship Counts")
+
+    if counts:
+
+        for relationship_type, count in counts.items():
+            print(f"{relationship_type:<12}: {count}")
+
+    else:
+
+        print("No relationships found.")
+
+    print("\nRelationships")
+
+    for relationship in graph.relationships:
+
+        print("-" * 80)
+        print(f"Type      : {relationship.relationship_type.value}")
+        print(f"Source ID : {relationship.source_id}")
+        print(f"Target ID : {relationship.target_id}")
+
+else:
+
+    print("No relationship graph found.")
+
+
+# ==========================================================
+# DEBUG DOCLING RELATIONSHIPS
+# ==========================================================
+
+print("\n")
+print("=" * 100)
+print("DOCLING RELATIONSHIP DEBUG")
+print("=" * 100)
+
+for node, level in docling_document.iterate_items():
+
+    print("-" * 80)
+
+    print(f"Type      : {type(node).__name__}")
+    print(f"Self Ref  : {node.self_ref}")
+
+    print(f"Parent    : {getattr(node, 'parent', None)}")
+    print(f"Children  : {getattr(node, 'children', None)}")
+    print(f"Captions  : {getattr(node, 'captions', None)}")
+    print(f"References: {getattr(node, 'references', None)}")
+    print(f"Footnotes : {getattr(node, 'footnotes', None)}")
