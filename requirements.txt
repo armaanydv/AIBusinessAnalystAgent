@@ -1,5 +1,13 @@
+docling
 fastapi
 uvicorn
-pydantic
-docling
 python-multipart
+pydantic
+python-dotenv
+pymongo
+certifi
+numpy
+pandas
+scikit-learn
+mlflow
+requests
