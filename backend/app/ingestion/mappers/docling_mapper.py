@@ -1,11 +1,14 @@
 from uuid import uuid4
+
+from app.document.hierarchy.hierarchy_builder import HierarchyBuilder
 from app.document.indexing.index_builder import IndexBuilder
-from app.ingestion.mappers.item_mappers.item_mapper_factory import ItemMapperFactory
+from app.document.relationships.relationship_builder import RelationshipBuilder
+from app.ingestion.mappers.item_mappers.item_mapper_factory import (
+    ItemMapperFactory,
+)
 from app.models.metadata import Metadata
 from app.models.page import Page
 from app.models.structured_document import StructuredDocument
-from app.document.indexing.index_builder import IndexBuilder
-from app.document.relationships.relationship_builder import RelationshipBuilder
 
 
 class DoclingMapper:
@@ -53,19 +56,37 @@ class DoclingMapper:
 
             reading_order += 1
 
-        document = StructuredDocument(
-    metadata=metadata,
-    pages=pages,
-)
+        # ----------------------------------------------------------
+        # Build Structured Document
+        # ----------------------------------------------------------
 
-# Build indexes
+        document = StructuredDocument(
+            metadata=metadata,
+            pages=pages,
+        )
+
+        # ----------------------------------------------------------
+        # Build Document Index
+        # ----------------------------------------------------------
+
         document.index = IndexBuilder().build(document)
 
-# Build relationship graph
+        # ----------------------------------------------------------
+        # Build Relationship Graph
+        # ----------------------------------------------------------
+
         document.relationship_graph = RelationshipBuilder().build(
-    docling_document,
-    document,
-)
+            docling_document,
+            document,
+        )
+
+        # ----------------------------------------------------------
+        # Build Hierarchy Tree
+        # ----------------------------------------------------------
+
+        document.hierarchy_tree = HierarchyBuilder().build(
+            document
+        )
 
         return document
 
