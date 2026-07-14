@@ -52,12 +52,12 @@ for page in structured_document.pages:
 
         print("-" * 80)
 
-        print(f"Type          : {type(element).__name__}")
-        print(f"Reading Order : {element.reading_order}")
-        print(f"Docling Ref   : {element.docling_ref}")
+        print(f"Type           : {type(element).__name__}")
+        print(f"Reading Order  : {element.reading_order}")
+        print(f"Docling Ref    : {element.docling_ref}")
 
         if hasattr(element, "text"):
-            print(f"Text          : {element.text}")
+            print(f"Text           : {element.text}")
 
         print()
 
@@ -71,11 +71,19 @@ print("=" * 100)
 print("DOCUMENT INDEX")
 print("=" * 100)
 
-if structured_document.index is not None:
+if structured_document.index:
 
-    print(f"Elements      : {len(structured_document.index.by_element_id)}")
-    print(f"Docling Refs  : {len(structured_document.index.by_docling_ref)}")
-    print(f"Pages         : {len(structured_document.index.by_page)}")
+    print(
+        f"Elements : {len(structured_document.index.by_element_id)}"
+    )
+
+    print(
+        f"Docling References : {len(structured_document.index.by_docling_ref)}"
+    )
+
+    print(
+        f"Pages : {len(structured_document.index.by_page)}"
+    )
 
 
 # ==========================================================
@@ -87,7 +95,7 @@ print("=" * 100)
 print("RELATIONSHIP GRAPH")
 print("=" * 100)
 
-if structured_document.relationship_graph is not None:
+if structured_document.relationship_graph:
 
     print(
         f"Relationships : {len(structured_document.relationship_graph.relationships)}"
@@ -109,6 +117,7 @@ def print_tree(node, depth=0):
     indent = "    " * depth
 
     if node.element is None:
+
         print(f"{indent}ROOT")
 
     else:
@@ -116,16 +125,55 @@ def print_tree(node, depth=0):
         print(f"{indent}{type(node.element).__name__}")
 
         if hasattr(node.element, "text"):
+
             print(f"{indent}  {node.element.text}")
 
     for child in node.children:
+
         print_tree(child, depth + 1)
 
 
-if structured_document.hierarchy_tree is not None:
+if structured_document.hierarchy_tree:
 
     print_tree(structured_document.hierarchy_tree.root)
 
+
+# ==========================================================
+# Semantic Chunks
+# ==========================================================
+
+print("\n")
+print("=" * 100)
+print("SEMANTIC CHUNKS")
+print("=" * 100)
+
+if structured_document.chunks:
+
+    for index, chunk in enumerate(
+        structured_document.chunks.chunks,
+        start=1,
+    ):
+
+        print(f"\nChunk {index}")
+
+        print("-" * 80)
+
+        print(f"Chunk ID       : {chunk.id}")
+        print(f"Title          : {chunk.title}")
+        print(
+            f"Pages          : {chunk.metadata.start_page} - {chunk.metadata.end_page}"
+        )
+        print(
+            f"Characters     : {chunk.metadata.character_count}"
+        )
+        print(
+            f"Source Elements: {len(chunk.source_element_ids)}"
+        )
+
+        print("\nChunk Text")
+        print("-" * 80)
+        print(chunk.text)
+
 else:
 
-    print("Hierarchy not found.")
+    print("No semantic chunks generated.")

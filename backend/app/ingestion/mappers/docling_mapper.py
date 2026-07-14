@@ -1,5 +1,6 @@
 from uuid import uuid4
 
+from app.document.chunking.chunk_builder import ChunkBuilder
 from app.document.hierarchy.hierarchy_builder import HierarchyBuilder
 from app.document.indexing.index_builder import IndexBuilder
 from app.document.relationships.relationship_builder import RelationshipBuilder
@@ -17,7 +18,6 @@ class DoclingMapper:
     """
 
     def __init__(self):
-
         self.factory = ItemMapperFactory()
 
     # ==========================================================
@@ -85,6 +85,14 @@ class DoclingMapper:
         # ----------------------------------------------------------
 
         document.hierarchy_tree = HierarchyBuilder().build(
+            document
+        )
+
+        # ----------------------------------------------------------
+        # Build Semantic Chunks
+        # ----------------------------------------------------------
+
+        document.chunks = ChunkBuilder().build(
             document
         )
 

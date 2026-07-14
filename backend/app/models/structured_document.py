@@ -2,6 +2,7 @@ from typing import Optional
 
 from pydantic import BaseModel, Field
 
+from app.document.chunking.chunk_collection import ChunkCollection
 from app.document.hierarchy.hierarchy_tree import HierarchyTree
 from app.document.indexing.document_index import DocumentIndex
 from app.document.relationships.relationship_graph import RelationshipGraph
@@ -24,5 +25,8 @@ class StructuredDocument(BaseModel):
     # Relationships between document elements
     relationship_graph: Optional[RelationshipGraph] = None
 
-    # Logical hierarchy of the document
+    # Logical hierarchy
     hierarchy_tree: Optional[HierarchyTree] = None
+
+    # Semantic chunks
+    chunks: Optional[ChunkCollection] = None
