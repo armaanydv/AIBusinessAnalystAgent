@@ -3,6 +3,8 @@ from pprint import pprint
 from docling.document_converter import DocumentConverter
 
 from app.ingestion.mappers.docling_mapper import DoclingMapper
+from app.retrieval.embeddings.bge_embedding_model import BGEEmbeddingModel
+from app.retrieval.embeddings.embedding_generator import EmbeddingGenerator
 
 
 # ==========================================================
@@ -74,15 +76,15 @@ print("=" * 100)
 if structured_document.index:
 
     print(
-        f"Elements : {len(structured_document.index.by_element_id)}"
+        f"Elements            : {len(structured_document.index.by_element_id)}"
     )
 
     print(
-        f"Docling References : {len(structured_document.index.by_docling_ref)}"
+        f"Docling References  : {len(structured_document.index.by_docling_ref)}"
     )
 
     print(
-        f"Pages : {len(structured_document.index.by_page)}"
+        f"Pages               : {len(structured_document.index.by_page)}"
     )
 
 
@@ -155,7 +157,6 @@ if structured_document.chunks:
     ):
 
         print(f"\nChunk {index}")
-
         print("-" * 80)
 
         print(f"Chunk ID       : {chunk.id}")
@@ -174,6 +175,39 @@ if structured_document.chunks:
         print("-" * 80)
         print(chunk.text)
 
-else:
 
-    print("No semantic chunks generated.")
+# ==========================================================
+# Embedding Generation
+# ==========================================================
+
+print("\n")
+print("=" * 100)
+print("EMBEDDINGS")
+print("=" * 100)
+
+embedding_model = BGEEmbeddingModel()
+
+embedding_generator = EmbeddingGenerator(
+    embedding_model
+)
+
+embeddings = embedding_generator.generate(
+    structured_document.chunks
+)
+
+print(f"\nTotal Embeddings : {len(embeddings)}")
+
+for index, embedding in enumerate(embeddings, start=1):
+
+    print("\n")
+    print("-" * 80)
+    print(f"Embedding {index}")
+    print("-" * 80)
+
+    print(f"Chunk ID   : {embedding.chunk_id}")
+    print(f"Model      : {embedding.model_name}")
+    print(f"Dimension  : {embedding.dimension}")
+
+    print("\nFirst 10 Values")
+
+    print(embedding.vector[:10])
