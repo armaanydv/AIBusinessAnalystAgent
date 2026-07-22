@@ -31,3 +31,4 @@ pymongo
 certifi
 
 loguru
+google-genai
