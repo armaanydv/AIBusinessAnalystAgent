@@ -1,7 +1,10 @@
 from copy import deepcopy
+import logging
 
 from app.models.structured_document import StructuredDocument
 from app.models.text_block import TextBlock
+
+logger = logging.getLogger(__name__)
 
 
 class DocumentPreprocessor:
@@ -14,17 +17,13 @@ class DocumentPreprocessor:
         Returns a cleaned copy of the document.
         """
 
-        print("\n===================================")
-        print("DOCUMENT PREPROCESSOR STARTED")
-        print("===================================\n")
+        logger.info("Starting document preprocessing.")
 
         cleaned_document = deepcopy(document)
 
         self._remove_empty_text_blocks(cleaned_document)
 
-        print("\n===================================")
-        print("DOCUMENT PREPROCESSOR FINISHED")
-        print("===================================\n")
+        logger.info("Document preprocessing completed.")
 
         return cleaned_document
 
@@ -45,21 +44,18 @@ class DocumentPreprocessor:
 
                 if isinstance(element, TextBlock):
 
-                    print(f"Checking: {element.text}")
+                    logger.debug("Checking TextBlock: %s", element.text)
 
                     # Remove empty text blocks
                     if element.text.strip() == "":
-                        print("-> Removed Empty TextBlock")
+                        logger.debug("Removed empty TextBlock.")
                         continue
 
                     # TEMPORARY TEST
                     if element.text == "Department of Higher Education":
-                        print("-> Removed Test TextBlock")
+                        logger.debug("Removed test TextBlock.")
                         continue
 
                 cleaned_elements.append(element)
 
             page.elements = cleaned_elements
-
-
-document_preprocessor = DocumentPreprocessor()

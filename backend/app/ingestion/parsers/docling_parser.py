@@ -1,8 +1,12 @@
+import logging
+
 from docling.document_converter import DocumentConverter
 
+from app.ingestion.parsed_document import ParsedDocument
 from app.ingestion.parsers.base_parser import BaseParser
 from app.ingestion.mappers.docling_mapper import DoclingMapper
-from app.models.structured_document import StructuredDocument
+
+logger = logging.getLogger(__name__)
 
 
 class DoclingParser(BaseParser):
@@ -11,12 +15,17 @@ class DoclingParser(BaseParser):
         self.converter = DocumentConverter()
         self.mapper = DoclingMapper()
 
-    def parse(self, file_path: str):
+    def parse(self, file_path: str) -> ParsedDocument:
 
-        print("Creating converter...")
+        logger.info("Parsing document: %s", file_path)
 
         result = self.converter.convert(file_path)
 
-        print("Conversion complete!")
+        logger.info("Document conversion completed.")
 
-        return self.mapper.map(result.document)
+        structured_document = self.mapper.map(result.document)
+
+        return ParsedDocument(
+            docling_document=result.document,
+            structured_document=structured_document,
+        )
