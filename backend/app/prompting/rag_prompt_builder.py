@@ -1,8 +1,5 @@
 from app.prompting.base_prompt_builder import BasePromptBuilder
-from app.prompting.prompt_templates import (
-    PROMPT_TEMPLATE,
-    RAG_SYSTEM_PROMPT,
-)
+from app.prompting.prompt_templates import PromptTemplates
 from app.retrieval.retriever.retrieval_result import RetrievalResult
 
 
@@ -16,10 +13,7 @@ class RAGPromptBuilder(BasePromptBuilder):
         query: str,
         retrieval_results: list[RetrievalResult],
     ) -> str:
-
-        context = self._build_context(
-            retrieval_results
-        )
+        context = self._build_context(retrieval_results)
 
         return self._build_prompt(
             query=query,
@@ -31,21 +25,45 @@ class RAGPromptBuilder(BasePromptBuilder):
         retrieval_results: list[RetrievalResult],
     ) -> str:
         """
-        Convert retrieved chunks into a context block.
+        Convert retrieved chunks into a formatted context block.
         """
 
-        sections: list[str] = []
-
-        for i, result in enumerate(
-            retrieval_results,
-            start=1,
-        ):
-            sections.append(
-                f"[Chunk {i}]\n"
-                f"{result.chunk.text.strip()}"
+        if not retrieval_results:
+            return (
+                "No relevant information was retrieved "
+                "from the knowledge base."
             )
 
-        return "\n\n".join(sections)
+        context_parts: list[str] = []
+
+        for index, result in enumerate(retrieval_results, start=1):
+
+            chunk = result.chunk
+
+            lines = [
+                f"[Chunk {index}]",
+            ]
+
+            # Optional metadata (only included if available)
+            page_number = getattr(chunk.metadata, "page_number", None)
+            section = getattr(chunk.metadata, "section", None)
+            similarity = getattr(result, "score", None)
+
+            if page_number is not None:
+                lines.append(f"Page: {page_number}")
+
+            if section:
+                lines.append(f"Section: {section}")
+
+            if similarity is not None:
+                lines.append(f"Similarity: {similarity:.4f}")
+
+            lines.append("")
+            lines.append(chunk.text.strip())
+
+            context_parts.append("\n".join(lines))
+
+        return "\n\n".join(context_parts)
 
     def _build_prompt(
         self,
@@ -56,8 +74,9 @@ class RAGPromptBuilder(BasePromptBuilder):
         Build the final prompt.
         """
 
-        return PROMPT_TEMPLATE.format(
-            system_prompt=RAG_SYSTEM_PROMPT.strip(),
+        return PromptTemplates.PROMPT_TEMPLATE.format(
+            system_prompt=PromptTemplates.RAG_SYSTEM_PROMPT.strip(),
+            separator=PromptTemplates.SECTION_SEPARATOR,
             context=context,
             query=query,
         )

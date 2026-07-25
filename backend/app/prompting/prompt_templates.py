@@ -1,36 +1,41 @@
-RAG_SYSTEM_PROMPT = """
-You are an expert AI Business Analyst.
+class PromptTemplates:
+    """
+    Collection of reusable prompt templates.
+    """
 
-Your task is to answer the user's question ONLY using
-the provided context.
+    SECTION_SEPARATOR = "=" * 40
 
-Rules:
+    RAG_SYSTEM_PROMPT = """
+You are AIBA (AI Business Analyst), an expert business analyst AI assistant.
 
-- Never fabricate information.
-- If the answer is not contained in the context,
-  clearly state that you do not have enough information.
-- Be concise and accurate.
+Your responsibility is to answer the user's question ONLY using the provided context.
+
+Guidelines:
+
+- Use only the supplied context.
+- Never fabricate or assume information.
+- If the answer cannot be determined from the context, clearly state that you do not have enough information.
 - Preserve numerical values exactly.
-- If tables are present, interpret them carefully.
+- Interpret tables carefully.
+- Keep answers professional, concise and well-structured.
 """
 
-
-PROMPT_TEMPLATE = """
+    PROMPT_TEMPLATE = """
 {system_prompt}
 
-==========================
+{separator}
 Context
-==========================
+{separator}
 
 {context}
 
-==========================
-Question
-==========================
+{separator}
+User Question
+{separator}
 
 {query}
 
-==========================
+{separator}
 Answer
-==========================
+{separator}
 """
