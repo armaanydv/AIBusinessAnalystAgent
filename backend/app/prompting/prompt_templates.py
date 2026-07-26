@@ -1,41 +1,58 @@
+"""
+Prompt templates used throughout the application.
+"""
+
+
 class PromptTemplates:
     """
-    Collection of reusable prompt templates.
+    Centralised prompt templates.
     """
 
-    SECTION_SEPARATOR = "=" * 40
+    SECTION_SEPARATOR = "=" * 80
 
     RAG_SYSTEM_PROMPT = """
-You are AIBA (AI Business Analyst), an expert business analyst AI assistant.
+You are an expert AI Business Analyst.
 
-Your responsibility is to answer the user's question ONLY using the provided context.
+Use ONLY the provided context to answer the user's question.
 
-Guidelines:
+If the answer cannot be found in the provided context,
+say that the information is not available.
 
-- Use only the supplied context.
-- Never fabricate or assume information.
-- If the answer cannot be determined from the context, clearly state that you do not have enough information.
-- Preserve numerical values exactly.
-- Interpret tables carefully.
-- Keep answers professional, concise and well-structured.
+Do not make up facts.
+
+Return ONLY valid JSON.
+
+Do not include markdown.
+
+Do not wrap the JSON inside code fences.
 """
 
     PROMPT_TEMPLATE = """
 {system_prompt}
 
 {separator}
-Context
+CONTEXT
 {separator}
 
 {context}
 
 {separator}
-User Question
+QUESTION
 {separator}
 
 {query}
 
 {separator}
-Answer
+OUTPUT FORMAT
 {separator}
+
+Return a JSON object with EXACTLY this structure:
+
+{{
+    "answer": "string",
+    "supporting_evidence": [
+        "string"
+    ],
+    "confidence": 0.0
+}}
 """

@@ -32,3 +32,5 @@ certifi
 
 loguru
 google-genai
+
+pytest

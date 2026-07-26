@@ -50,7 +50,7 @@ class GeminiLLM(BaseLLM):
             usage = getattr(response, "usage_metadata", None)
 
             return LLMResponse(
-                content=response.text,
+                text=response.text,
                 input_tokens=getattr(usage, "prompt_token_count", None),
                 output_tokens=getattr(usage, "candidates_token_count", None),
                 total_tokens=getattr(usage, "total_token_count", None),

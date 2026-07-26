@@ -1,5 +1,11 @@
+"""
+Retrieval-Augmented Generation service.
+"""
+
 from app.llm.base_llm import BaseLLM
 from app.llm.llm_request import LLMRequest
+from app.llm.output_parser import OutputParser
+from app.outputs.rag_answer import RAGAnswer
 from app.prompting.base_prompt_builder import BasePromptBuilder
 from app.rag.rag_request import RAGRequest
 from app.rag.rag_response import RAGResponse
@@ -9,17 +15,6 @@ from app.retrieval.retriever.base_retriever import BaseRetriever
 class RAGService:
     """
     Orchestrates the complete Retrieval-Augmented Generation pipeline.
-
-    Pipeline:
-        Query
-            ↓
-        Retriever
-            ↓
-        Prompt Builder
-            ↓
-        LLM
-            ↓
-        RAG Response
     """
 
     def __init__(
@@ -27,17 +22,19 @@ class RAGService:
         retriever: BaseRetriever,
         prompt_builder: BasePromptBuilder,
         llm: BaseLLM,
+        output_parser: OutputParser,
     ) -> None:
         self._retriever = retriever
         self._prompt_builder = prompt_builder
         self._llm = llm
+        self._output_parser = output_parser
 
     def generate(
         self,
         request: RAGRequest,
     ) -> RAGResponse:
         """
-        Generate an answer for a user query using Retrieval-Augmented Generation.
+        Generate an answer using Retrieval-Augmented Generation.
         """
 
         retrieval_results = self._retriever.retrieve(
@@ -51,11 +48,18 @@ class RAGService:
         )
 
         llm_response = self._llm.generate(
-            LLMRequest(prompt=prompt)
+            LLMRequest(
+                prompt=prompt,
+            )
+        )
+
+        parsed_output = self._output_parser.parse(
+            llm_response,
+            RAGAnswer,
         )
 
         return RAGResponse(
-            answer=llm_response.content,
+            answer=parsed_output.answer,
             retrieval_results=retrieval_results,
             llm_response=llm_response,
         )

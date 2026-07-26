@@ -1,4 +1,9 @@
-from abc import ABC, abstractmethod
+"""
+Base interface for prompt builders.
+"""
+
+from abc import ABC
+from abc import abstractmethod
 
 from app.retrieval.retriever.retrieval_result import RetrievalResult
 
@@ -6,10 +11,6 @@ from app.retrieval.retriever.retrieval_result import RetrievalResult
 class BasePromptBuilder(ABC):
     """
     Abstract interface for all prompt builders.
-
-    A prompt builder is responsible for converting a user query
-    and retrieved document chunks into a prompt that can be
-    consumed by an LLM.
     """
 
     @abstractmethod
@@ -19,16 +20,16 @@ class BasePromptBuilder(ABC):
         retrieval_results: list[RetrievalResult],
     ) -> str:
         """
-        Build the final prompt.
+        Build a complete prompt for the LLM.
 
         Args:
             query:
-                User question.
+                User query.
 
             retrieval_results:
                 Retrieved document chunks.
 
         Returns:
-            Complete prompt string.
+            Fully formatted prompt.
         """
-        pass
+        raise NotImplementedError

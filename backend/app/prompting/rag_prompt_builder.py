@@ -44,7 +44,6 @@ class RAGPromptBuilder(BasePromptBuilder):
                 f"[Chunk {index}]",
             ]
 
-            # Optional metadata (only included if available)
             page_number = getattr(chunk.metadata, "page_number", None)
             section = getattr(chunk.metadata, "section", None)
             similarity = getattr(result, "score", None)
