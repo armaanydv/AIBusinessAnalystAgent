@@ -1,13 +1,42 @@
+from google import genai
+
+from app.core.llm_config import get_llm_config
+from app.core.settings import get_settings
+
 from app.document.chunking.chunk_builder import ChunkBuilder
 from app.document.hierarchy.hierarchy_builder import HierarchyBuilder
 from app.document.indexing.index_builder import IndexBuilder
 from app.document.relationships.relationship_builder import RelationshipBuilder
+
 from app.ingestion.ingestion_service import IngestionService
 from app.ingestion.parsers.docling_parser import DoclingParser
-from app.preprocessing.document_preprocessor import DocumentPreprocessor
-from app.retrieval.embeddings.bge_embedding_model import BGEEmbeddingModel
-from app.retrieval.embeddings.embedding_generator import EmbeddingGenerator
-from app.retrieval.vector_store.faiss_vector_store import FAISSVectorStore
+
+from app.llm.gemini_llm import GeminiLLM
+from app.llm.output_parser import OutputParser
+
+from app.preprocessing.document_preprocessor import (
+    DocumentPreprocessor,
+)
+
+from app.prompting.rag_prompt_builder import (
+    RAGPromptBuilder,
+)
+
+from app.services.rag_service import RAGService
+
+from app.retrieval.embeddings.bge_embedding_model import (
+    BGEEmbeddingModel,
+)
+from app.retrieval.embeddings.embedding_generator import (
+    EmbeddingGenerator,
+)
+from app.retrieval.retriever.semantic_retriever import (
+    SemanticRetriever,
+)
+from app.retrieval.vector_store.faiss_vector_store import (
+    FAISSVectorStore,
+)
+
 from app.storage.artifact_storage import ArtifactStorage
 
 # ==========================================================
@@ -27,7 +56,7 @@ hierarchy_builder = HierarchyBuilder()
 chunk_builder = ChunkBuilder()
 
 # ==========================================================
-# Retrieval Components
+# Embeddings
 # ==========================================================
 
 embedding_model = BGEEmbeddingModel()
@@ -36,8 +65,17 @@ embedding_generator = EmbeddingGenerator(
     embedding_model=embedding_model,
 )
 
+# ==========================================================
+# Vector Store
+# ==========================================================
+
 vector_store = FAISSVectorStore(
     dimension=embedding_model.dimension,
+)
+
+semantic_retriever = SemanticRetriever(
+    embedding_model=embedding_model,
+    vector_store=vector_store,
 )
 
 # ==========================================================
@@ -45,6 +83,35 @@ vector_store = FAISSVectorStore(
 # ==========================================================
 
 artifact_storage = ArtifactStorage()
+
+# ==========================================================
+# Prompting
+# ==========================================================
+
+prompt_builder = RAGPromptBuilder()
+
+# ==========================================================
+# Output Parsing
+# ==========================================================
+
+output_parser = OutputParser()
+
+# ==========================================================
+# LLM
+# ==========================================================
+
+settings = get_settings()
+
+llm_config = get_llm_config()
+
+gemini_client = genai.Client(
+    api_key=settings.llm.api_key,
+)
+
+gemini_llm = GeminiLLM(
+    client=gemini_client,
+    config=llm_config,
+)
 
 # ==========================================================
 # Services
@@ -60,4 +127,11 @@ ingestion_service = IngestionService(
     embedding_generator=embedding_generator,
     vector_store=vector_store,
     artifact_storage=artifact_storage,
+)
+
+rag_service = RAGService(
+    retriever=semantic_retriever,
+    prompt_builder=prompt_builder,
+    llm=gemini_llm,
+    output_parser=output_parser,
 )

@@ -8,20 +8,31 @@ application settings.
 
 from dataclasses import dataclass
 
+from app.core.settings import get_settings
+
 
 @dataclass(slots=True, frozen=True)
 class LLMConfig:
     """
     Immutable runtime configuration for an LLM instance.
-
-    Attributes:
-        model: Default model name.
-        temperature: Default sampling temperature.
-        max_tokens: Default maximum number of output tokens.
-        timeout: Request timeout in seconds.
     """
 
     model: str
     temperature: float
     max_tokens: int
     timeout: float
+
+
+def get_llm_config() -> LLMConfig:
+    """
+    Build an LLMConfig from application settings.
+    """
+
+    settings = get_settings()
+
+    return LLMConfig(
+        model=settings.llm.model,
+        temperature=settings.llm.temperature,
+        max_tokens=settings.llm.max_tokens,
+        timeout=settings.llm.timeout,
+    )

@@ -6,6 +6,7 @@ from fastapi import APIRouter, File, HTTPException, UploadFile
 
 from app.core.bootstrap import ingestion_service
 from app.validators.upload_validator import validate_upload
+from app.core.bootstrap import semantic_retriever
 
 router = APIRouter()
 
@@ -50,6 +51,7 @@ async def upload_pdf(
         document, chunks = ingestion_service.ingest(
             temp_path
         )
+        semantic_retriever.set_chunks(chunks)
 
         # ---------------------------------------------------------
         # Success response

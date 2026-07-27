@@ -20,13 +20,22 @@ class SemanticRetriever(BaseRetriever):
         self,
         embedding_model: BaseEmbeddingModel,
         vector_store: BaseVectorStore,
-        chunks: ChunkCollection,
     ) -> None:
 
         self.embedding_model = embedding_model
         self.vector_store = vector_store
 
-        self.chunk_lookup: dict[str, Chunk] = {
+        self.chunk_lookup: dict[str, Chunk] = {}
+
+    def set_chunks(
+        self,
+        chunks: ChunkCollection,
+    ) -> None:
+        """
+        Updates the retriever with the latest document chunks.
+        """
+
+        self.chunk_lookup = {
             chunk.id: chunk
             for chunk in chunks.chunks
         }
@@ -39,6 +48,12 @@ class SemanticRetriever(BaseRetriever):
         """
         Retrieve the top-k most relevant chunks.
         """
+
+        if not self.chunk_lookup:
+            logger.warning(
+                "Retriever has no chunks loaded."
+            )
+            return []
 
         query_vector = self.embedding_model.encode(
             [query]

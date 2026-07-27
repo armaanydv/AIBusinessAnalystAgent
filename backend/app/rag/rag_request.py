@@ -1,8 +1,7 @@
-from dataclasses import dataclass
+from pydantic import BaseModel
 
 
-@dataclass(slots=True, frozen=True)
-class RAGRequest:
+class RAGRequest(BaseModel):
     """
     Represents a user request to the RAG pipeline.
     """
