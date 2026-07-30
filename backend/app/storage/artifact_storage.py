@@ -46,6 +46,40 @@ class ArtifactStorage:
         return self._root_directory / document_id
 
     # ---------------------------------------------------------
+    # Document Discovery
+    # ---------------------------------------------------------
+
+    def list_documents(
+        self,
+    ) -> list[str]:
+        """
+        Returns the IDs of all persisted documents.
+        """
+
+        if not self._root_directory.exists():
+            return []
+
+        return sorted(
+            [
+                directory.name
+                for directory in self._root_directory.iterdir()
+                if directory.is_dir()
+            ]
+        )
+
+    def document_exists(
+        self,
+        document_id: str,
+    ) -> bool:
+        """
+        Returns True if the document exists on disk.
+        """
+
+        return self._document_directory(
+            document_id
+        ).exists()
+
+    # ---------------------------------------------------------
     # Structured document
     # ---------------------------------------------------------
 
@@ -169,13 +203,15 @@ class ArtifactStorage:
         vector_store.save(directory)
 
     def load_vector_store(
-        self,
-        document_id: str,
-        vector_store: FAISSVectorStore,
+      self,
+       document_id: str,
+       vector_store: FAISSVectorStore,
     ) -> None:
 
-        directory = self._document_directory(
-            document_id
-        )
+       directory = self._document_directory(
+        document_id
+    )
 
-        vector_store.load(directory)
+       vector_store.load_and_merge(
+        directory
+    )

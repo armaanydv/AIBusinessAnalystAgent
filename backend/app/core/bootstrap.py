@@ -85,6 +85,48 @@ semantic_retriever = SemanticRetriever(
 artifact_storage = ArtifactStorage()
 
 # ==========================================================
+# Restore Persisted Knowledge Base
+# ==========================================================
+
+loaded_documents = 0
+
+for document_id in artifact_storage.list_documents():
+
+    try:
+
+        artifact_storage.load_vector_store(
+            document_id=document_id,
+            vector_store=vector_store,
+        )
+
+        chunks = artifact_storage.load_chunks(
+            document_id=document_id,
+        )
+
+        semantic_retriever.set_chunks(
+            chunks,
+        )
+
+        loaded_documents += 1
+
+        print(
+            f"[INFO] Restored document '{document_id}'."
+        )
+
+    except Exception as exc:
+
+        print(
+            f"[WARNING] Failed to restore "
+            f"'{document_id}': {exc}"
+        )
+
+print(
+    f"[INFO] Restored "
+    f"{loaded_documents} document(s) "
+    f"containing {len(vector_store)} vectors."
+)
+
+# ==========================================================
 # Prompting
 # ==========================================================
 

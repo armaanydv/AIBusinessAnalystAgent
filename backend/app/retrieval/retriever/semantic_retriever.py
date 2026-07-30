@@ -32,13 +32,29 @@ class SemanticRetriever(BaseRetriever):
         chunks: ChunkCollection,
     ) -> None:
         """
-        Updates the retriever with the latest document chunks.
+        Adds document chunks to the retriever.
+
+        Existing chunks are preserved so multiple documents
+        can be searched simultaneously.
         """
 
-        self.chunk_lookup = {
-            chunk.id: chunk
-            for chunk in chunks.chunks
-        }
+        for chunk in chunks.chunks:
+            self.chunk_lookup[chunk.id] = chunk
+
+        logger.info(
+            "Loaded %d chunks. Total chunks: %d",
+            len(chunks.chunks),
+            len(self.chunk_lookup),
+        )
+
+    def clear_chunks(
+        self,
+    ) -> None:
+        """
+        Clears all loaded chunks.
+        """
+
+        self.chunk_lookup.clear()
 
     def retrieve(
         self,

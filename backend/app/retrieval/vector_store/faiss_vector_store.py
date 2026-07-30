@@ -232,6 +232,58 @@ class FAISSVectorStore(BaseVectorStore):
             directory,
         )
 
+           # ---------------------------------------------------------
+        # Load and Merge
+        # ---------------------------------------------------------
+        
+    def load_and_merge(
+            self,
+        directory: str | Path,
+            ) -> None:
+              """
+               Loads another persisted FAISS index and merges it into the
+               current vector store.
+         
+                Existing vectors are preserved, allowing multiple documents
+            to be searched together.
+            """
+        
+              directory = Path(directory)
+        
+              loaded_index = faiss.read_index(
+                 str(
+                    directory / self.INDEX_FILENAME
+                )
+            )
+        
+              with open(
+                directory / self.MAPPING_FILENAME,
+                "rb",
+            ) as file:
+        
+                loaded_mapping: dict[int, str] = pickle.load(
+                    file
+                )
+        
+            # Offset where the new vectors will begin.
+                offset = self.index.ntotal
+        
+            # Merge the loaded index into the existing one.
+              self.index.merge_from(loaded_index)
+        
+            # Shift the mapping indices to match the merged index.
+              for index, chunk_id in loaded_mapping.items():
+                        self.index_to_chunk[
+                    index + offset
+                ] = chunk_id
+        
+              logger.info(
+                "Merged %d vectors from '%s'. Total vectors: %d",
+                loaded_index.ntotal,
+                directory,
+                self.index.ntotal,
+            )
+
     # ---------------------------------------------------------
     # Properties
     # ---------------------------------------------------------
@@ -258,3 +310,5 @@ class FAISSVectorStore(BaseVectorStore):
             f"size={self.size}, "
             f"dimension={self.dimension})"
         )
+
+ 

@@ -1,6 +1,7 @@
 from pathlib import Path
 import os
 import tempfile
+import traceback
 
 from fastapi import APIRouter, File, HTTPException, UploadFile
 
@@ -64,11 +65,14 @@ async def upload_pdf(
             "chunks_created": len(chunks.chunks),
         }
 
-    except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=str(e),
-        )
+    # except Exception as e:
+    #     raise HTTPException(
+    #         status_code=500,
+    #         detail=str(e),
+        # )
+    except Exception:
+      traceback.print_exc()
+      raise
 
     finally:
         if temp_path and os.path.exists(temp_path):
