@@ -2,6 +2,7 @@ fastapi
 uvicorn
 python-dotenv
 python-multipart
+
 pydantic
 pydantic-settings
 
@@ -18,6 +19,7 @@ huggingface-hub
 safetensors
 
 faiss-cpu
+rank-bm25
 
 numpy
 scipy
