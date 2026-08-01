@@ -8,6 +8,9 @@ class ChunkMetadata(BaseModel):
     Metadata describing a semantic chunk.
     """
 
+    # Source document
+    source_document: str
+
     # Page range covered by this chunk
     start_page: int
 

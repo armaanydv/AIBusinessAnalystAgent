@@ -12,3 +12,5 @@ class RetrievalResult:
     chunk: Chunk
 
     similarity_score: float
+
+    rank: int
