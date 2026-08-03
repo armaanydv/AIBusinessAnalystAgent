@@ -10,6 +10,7 @@ from app.models.structured_document import StructuredDocument
 
 from app.preprocessing.document_preprocessor import DocumentPreprocessor
 
+from app.retrieval.bm25.bm25_index import BM25Index
 from app.retrieval.embeddings.embedding_generator import EmbeddingGenerator
 from app.retrieval.vector_store.base_vector_store import BaseVectorStore
 from app.retrieval.vector_store.vector_record import VectorRecord
@@ -32,6 +33,7 @@ class IngestionService:
         chunk_builder: ChunkBuilder,
         embedding_generator: EmbeddingGenerator,
         vector_store: BaseVectorStore,
+        bm25_index: BM25Index,
         artifact_storage: ArtifactStorage,
     ) -> None:
 
@@ -42,7 +44,10 @@ class IngestionService:
         self._hierarchy_builder = hierarchy_builder
         self._chunk_builder = chunk_builder
         self._embedding_generator = embedding_generator
+
         self._vector_store = vector_store
+        self._bm25_index = bm25_index
+
         self._artifact_storage = artifact_storage
 
     def ingest(
@@ -54,7 +59,9 @@ class IngestionService:
         # Parse
         # ---------------------------------------------------------
 
-        parsed_document = self._parser.parse(file_path)
+        parsed_document = self._parser.parse(
+            file_path
+        )
 
         document = parsed_document.structured_document
 
@@ -62,31 +69,45 @@ class IngestionService:
         # Preprocess
         # ---------------------------------------------------------
 
-        document = self._preprocessor.preprocess(document)
+        document = self._preprocessor.preprocess(
+            document
+        )
 
         # ---------------------------------------------------------
         # Build document artifacts
         # ---------------------------------------------------------
 
-        document.index = self._index_builder.build(document)
-
-        document.relationship_graph = self._relationship_builder.build(
-            parsed_document.docling_document,
-            document,
+        document.index = self._index_builder.build(
+            document
         )
 
-        document.hierarchy_tree = self._hierarchy_builder.build(document)
+        document.relationship_graph = (
+            self._relationship_builder.build(
+                parsed_document.docling_document,
+                document,
+            )
+        )
 
-        chunks = self._chunk_builder.build(document)
+        document.hierarchy_tree = (
+            self._hierarchy_builder.build(
+                document
+            )
+        )
+
+        chunks = self._chunk_builder.build(
+            document
+        )
 
         # ---------------------------------------------------------
         # Generate embeddings
         # ---------------------------------------------------------
 
-        embeddings = self._embedding_generator.generate(chunks)
+        embeddings = self._embedding_generator.generate(
+            chunks
+        )
 
         # ---------------------------------------------------------
-        # Convert Embeddings -> VectorRecords
+        # Convert embeddings to vector records
         # ---------------------------------------------------------
 
         records = [
@@ -98,10 +119,16 @@ class IngestionService:
         ]
 
         # ---------------------------------------------------------
-        # Index vectors
+        # Build search indexes
         # ---------------------------------------------------------
 
-        self._vector_store.add_many(records)
+        self._vector_store.add_many(
+            records
+        )
+
+        self._bm25_index.build(
+            chunks
+        )
 
         # ---------------------------------------------------------
         # Persist artifacts
@@ -111,18 +138,23 @@ class IngestionService:
 
         # self._artifact_storage.save_document(
         #     document_id=document_id,
-        #      document=document,
-        #  )
+        #     document=document,
+        # )
 
         self._artifact_storage.save_chunks(
-             document_id=document_id,
-             chunks=chunks,
+            document_id=document_id,
+            chunks=chunks,
         )
 
         self._artifact_storage.save_vector_store(
-             document_id=document_id,
-             vector_store=self._vector_store,
-         )
+            document_id=document_id,
+            vector_store=self._vector_store,
+        )
+
+        self._artifact_storage.save_bm25_index(
+            document_id=document_id,
+            bm25_index=self._bm25_index,
+        )
 
         # ---------------------------------------------------------
         # Return

@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 from rank_bm25 import BM25Okapi
 
 from app.document.chunking.chunk_collection import ChunkCollection
 from app.retrieval.bm25.bm25_config import BM25Config
+from app.retrieval.bm25.bm25_index_artifact import BM25IndexArtifact
 from app.retrieval.bm25.tokenizer import BM25Tokenizer
 
 
@@ -11,10 +14,12 @@ class BM25Index:
     """
     BM25 lexical search index.
 
-    Wraps the rank_bm25 implementation and exposes
-    a clean interface for building and searching
+    Wraps rank_bm25 and provides a clean interface for
+    building, searching, saving, loading and clearing
     the index.
     """
+
+    INDEX_FILENAME = "bm25_index.json"
 
     def __init__(
         self,
@@ -28,6 +33,7 @@ class BM25Index:
         self._index: BM25Okapi | None = None
 
         self._chunk_ids: list[str] = []
+        self._tokenized_corpus: list[list[str]] = []
 
     # ---------------------------------------------------------
     # Build
@@ -38,27 +44,25 @@ class BM25Index:
         chunks: ChunkCollection,
     ) -> None:
         """
-        Build the BM25 index from a collection of chunks.
+        Build the BM25 index from document chunks.
         """
 
-        corpus = []
-
-        self._chunk_ids.clear()
+        self.clear()
 
         for chunk in chunks.chunks:
-
-            corpus.append(
-                self._tokenizer.tokenize(
-                    chunk.text
-                )
-            )
 
             self._chunk_ids.append(
                 chunk.id
             )
 
+            self._tokenized_corpus.append(
+                self._tokenizer.tokenize(
+                    chunk.text
+                )
+            )
+
         self._index = BM25Okapi(
-            corpus=corpus,
+            corpus=self._tokenized_corpus,
             k1=self._config.k1,
             b=self._config.b,
         )
@@ -74,10 +78,6 @@ class BM25Index:
     ) -> list[tuple[str, float]]:
         """
         Search the BM25 index.
-
-        Returns:
-            List of (chunk_id, score) pairs sorted by
-            descending BM25 score.
         """
 
         if self._index is None:
@@ -109,8 +109,85 @@ class BM25Index:
         ]
 
     # ---------------------------------------------------------
-    # Properties
+    # Persistence
     # ---------------------------------------------------------
+
+    def save(
+        self,
+        directory: Path,
+    ) -> None:
+        """
+        Persist the BM25 index.
+        """
+
+        directory.mkdir(
+            parents=True,
+            exist_ok=True,
+        )
+
+        artifact = BM25IndexArtifact(
+            chunk_ids=self._chunk_ids,
+            tokenized_corpus=self._tokenized_corpus,
+        )
+
+        path = (
+            directory
+            / self.INDEX_FILENAME
+        )
+
+        path.write_text(
+            artifact.model_dump_json(
+                indent=2,
+            ),
+            encoding="utf-8",
+        )
+
+    def load(
+        self,
+        directory: Path,
+    ) -> None:
+        """
+        Load a persisted BM25 index.
+        """
+
+        path = (
+            directory
+            / self.INDEX_FILENAME
+        )
+
+        artifact = (
+            BM25IndexArtifact.model_validate_json(
+                path.read_text(
+                    encoding="utf-8",
+                )
+            )
+        )
+
+        self._chunk_ids = artifact.chunk_ids
+        self._tokenized_corpus = (
+            artifact.tokenized_corpus
+        )
+
+        self._index = BM25Okapi(
+            corpus=self._tokenized_corpus,
+            k1=self._config.k1,
+            b=self._config.b,
+        )
+
+    # ---------------------------------------------------------
+    # Utilities
+    # ---------------------------------------------------------
+
+    def clear(
+        self,
+    ) -> None:
+        """
+        Clear the loaded BM25 index.
+        """
+
+        self._index = None
+        self._chunk_ids.clear()
+        self._tokenized_corpus.clear()
 
     @property
     def size(

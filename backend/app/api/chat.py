@@ -1,3 +1,5 @@
+import traceback
+
 from fastapi import APIRouter, HTTPException
 
 from app.core.bootstrap import rag_service
@@ -11,6 +13,7 @@ def chat(
     request: RAGRequest,
 ):
     try:
+
         response = rag_service.generate(
             request=request,
         )
@@ -35,7 +38,10 @@ def chat(
         }
 
     except Exception as exc:
+
+        traceback.print_exc()
+
         raise HTTPException(
             status_code=500,
             detail=str(exc),
-        )
+        ) from exc

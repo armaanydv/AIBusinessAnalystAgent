@@ -1,4 +1,5 @@
 from pathlib import Path
+from app.retrieval.bm25.bm25_index import BM25Index
 
 from app.core.settings import get_settings
 from app.document.chunking.chunk_collection import ChunkCollection
@@ -215,3 +216,45 @@ class ArtifactStorage:
        vector_store.load_and_merge(
         directory
     )
+        # ---------------------------------------------------------
+    # BM25 Index
+    # ---------------------------------------------------------
+
+    def save_bm25_index(
+        self,
+        document_id: str,
+        bm25_index: BM25Index,
+    ) -> None:
+        """
+        Persist the BM25 index.
+        """
+
+        directory = self._document_directory(
+            document_id
+        )
+
+        directory.mkdir(
+            parents=True,
+            exist_ok=True,
+        )
+
+        bm25_index.save(
+            directory
+        )
+
+    def load_bm25_index(
+        self,
+        document_id: str,
+        bm25_index: BM25Index,
+    ) -> None:
+        """
+        Load a persisted BM25 index.
+        """
+
+        directory = self._document_directory(
+            document_id
+        )
+
+        bm25_index.load(
+            directory
+        )

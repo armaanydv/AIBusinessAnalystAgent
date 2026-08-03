@@ -66,14 +66,28 @@ class SemanticRetriever(BaseRetriever):
 
         results: list[RetrievalResult] = []
 
-        for rank, (chunk_id, score) in enumerate(matches, start=1):
-          ...
-          results.append(
-          RetrievalResult(
-            chunk=chunk,
-            similarity_score=score,
-            rank=rank,
-        )
-    )
+        for rank, (chunk_id, score) in enumerate(
+            matches,
+            start=1,
+        ):
+
+            chunk = self.chunk_lookup.get(
+                chunk_id
+            )
+
+            if chunk is None:
+                logger.warning(
+                    "Chunk '%s' not found.",
+                    chunk_id,
+                )
+                continue
+
+            results.append(
+                RetrievalResult(
+                    chunk=chunk,
+                    similarity_score=score,
+                    rank=rank,
+                )
+            )
 
         return results

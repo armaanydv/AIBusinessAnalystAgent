@@ -24,6 +24,9 @@ from app.prompting.rag_prompt_builder import (
 
 from app.services.rag_service import RAGService
 
+from app.retrieval.bm25.bm25_config import BM25Config
+from app.retrieval.bm25.bm25_index import BM25Index
+from app.retrieval.bm25.tokenizer import BM25Tokenizer
 from app.retrieval.embeddings.bge_embedding_model import (
     BGEEmbeddingModel,
 )
@@ -66,12 +69,25 @@ embedding_generator = EmbeddingGenerator(
 )
 
 # ==========================================================
-# Vector Store
+# Search Indexes
 # ==========================================================
 
 vector_store = FAISSVectorStore(
     dimension=embedding_model.dimension,
 )
+
+bm25_tokenizer = BM25Tokenizer()
+
+bm25_config = BM25Config()
+
+bm25_index = BM25Index(
+    tokenizer=bm25_tokenizer,
+    config=bm25_config,
+)
+
+# ==========================================================
+# Retrievers
+# ==========================================================
 
 semantic_retriever = SemanticRetriever(
     embedding_model=embedding_model,
@@ -99,10 +115,16 @@ for document_id in artifact_storage.list_documents():
             vector_store=vector_store,
         )
 
+        artifact_storage.load_bm25_index(
+            document_id=document_id,
+            bm25_index=bm25_index,
+        )
+
         chunks = artifact_storage.load_chunks(
             document_id=document_id,
         )
 
+        # Temporary until SemanticRetriever is refactored.
         semantic_retriever.set_chunks(
             chunks,
         )
@@ -143,6 +165,8 @@ output_parser = OutputParser()
 # ==========================================================
 
 settings = get_settings()
+print("API key prefix:", settings.llm.api_key[:8])
+print("Model:", settings.llm.model)
 
 llm_config = get_llm_config()
 
@@ -168,6 +192,7 @@ ingestion_service = IngestionService(
     chunk_builder=chunk_builder,
     embedding_generator=embedding_generator,
     vector_store=vector_store,
+    bm25_index=bm25_index,
     artifact_storage=artifact_storage,
 )
 

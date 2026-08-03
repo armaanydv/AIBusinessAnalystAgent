@@ -10,11 +10,14 @@ class ChunkBuilder:
     Builds semantic chunks from the hierarchy tree.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
 
         self.renderer = TextRenderer()
 
-    def build(self, structured_document) -> ChunkCollection:
+    def build(
+        self,
+        structured_document,
+    ) -> ChunkCollection:
 
         collection = ChunkCollection()
 
@@ -22,6 +25,10 @@ class ChunkBuilder:
 
         if hierarchy is None:
             return collection
+
+        source_document = (
+            structured_document.metadata.document_id
+        )
 
         for section in hierarchy.root.children:
 
@@ -33,7 +40,10 @@ class ChunkBuilder:
 
                 elements.append(section.element)
 
-                if isinstance(section.element, Heading):
+                if isinstance(
+                    section.element,
+                    Heading,
+                ):
                     title = section.element.text
 
             for child in section.children:
@@ -44,11 +54,20 @@ class ChunkBuilder:
             if not elements:
                 continue
 
-            text = self.renderer.render(elements)
+            text = self.renderer.render(
+                elements
+            )
 
             metadata = ChunkMetadata(
-                start_page=min(e.page_number for e in elements),
-                end_page=max(e.page_number for e in elements),
+                source_document=source_document,
+                start_page=min(
+                    e.page_number
+                    for e in elements
+                ),
+                end_page=max(
+                    e.page_number
+                    for e in elements
+                ),
                 hierarchy_level=1,
                 character_count=len(text),
             )
@@ -57,9 +76,14 @@ class ChunkBuilder:
                 title=title,
                 text=text,
                 metadata=metadata,
-                source_element_ids=[e.id for e in elements],
+                source_element_ids=[
+                    e.id
+                    for e in elements
+                ],
             )
 
-            collection.chunks.append(chunk)
+            collection.chunks.append(
+                chunk
+            )
 
         return collection
