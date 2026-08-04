@@ -1,6 +1,3 @@
-from google import genai
-
-from app.core.llm_config import get_llm_config
 from app.core.settings import get_settings
 
 from app.document.chunking.chunk_builder import ChunkBuilder
@@ -11,7 +8,7 @@ from app.document.relationships.relationship_builder import RelationshipBuilder
 from app.ingestion.ingestion_service import IngestionService
 from app.ingestion.parsers.docling_parser import DoclingParser
 
-from app.llm.gemini_llm import GeminiLLM
+from app.llm.llm_factory import LLMFactory
 from app.llm.output_parser import OutputParser
 
 from app.preprocessing.document_preprocessor import (
@@ -164,20 +161,7 @@ output_parser = OutputParser()
 # LLM
 # ==========================================================
 
-settings = get_settings()
-print("API key prefix:", settings.llm.api_key[:8])
-print("Model:", settings.llm.model)
-
-llm_config = get_llm_config()
-
-gemini_client = genai.Client(
-    api_key=settings.llm.api_key,
-)
-
-gemini_llm = GeminiLLM(
-    client=gemini_client,
-    config=llm_config,
-)
+llm = LLMFactory.create()
 
 # ==========================================================
 # Services
@@ -199,6 +183,6 @@ ingestion_service = IngestionService(
 rag_service = RAGService(
     retriever=semantic_retriever,
     prompt_builder=prompt_builder,
-    llm=gemini_llm,
+    llm=llm,
     output_parser=output_parser,
 )

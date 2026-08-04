@@ -12,11 +12,29 @@ class BaseAppSettings(BaseSettings):
 
 
 class LLMSettings(BaseAppSettings):
-    api_key: str = Field(alias="GEMINI_API_KEY")
+    provider: str = Field(
+        default="groq",
+        alias="LLM_PROVIDER",
+    )
 
-    model: str = Field(
-        default="gemini-3.6-flash",
+    gemini_api_key: str = Field(
+        default="",
+        alias="GEMINI_API_KEY",
+    )
+
+    gemini_model: str = Field(
+        default="gemini-2.5-flash",
         alias="GEMINI_MODEL",
+    )
+
+    groq_api_key: str = Field(
+        default="",
+        alias="GROQ_API_KEY",
+    )
+
+    groq_model: str = Field(
+        default="llama-3.3-70b-versatile",
+        alias="GROQ_MODEL",
     )
 
     temperature: float = Field(
@@ -43,7 +61,7 @@ class StorageSettings(BaseAppSettings):
 
 
 class Settings:
-    def __init__(self):
+    def __init__(self) -> None:
         self.llm = LLMSettings()
         self.storage = StorageSettings()
 

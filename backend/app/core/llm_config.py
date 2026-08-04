@@ -17,9 +17,16 @@ class LLMConfig:
     Immutable runtime configuration for an LLM instance.
     """
 
+    provider: str
+
     model: str
+
+    api_key: str
+
     temperature: float
+
     max_tokens: int
+
     timeout: float
 
 
@@ -30,9 +37,30 @@ def get_llm_config() -> LLMConfig:
 
     settings = get_settings()
 
-    return LLMConfig(
-        model=settings.llm.model,
-        temperature=settings.llm.temperature,
-        max_tokens=settings.llm.max_tokens,
-        timeout=settings.llm.timeout,
+    provider = settings.llm.provider.lower()
+
+    if provider == "groq":
+
+        return LLMConfig(
+            provider="groq",
+            model=settings.llm.groq_model,
+            api_key=settings.llm.groq_api_key,
+            temperature=settings.llm.temperature,
+            max_tokens=settings.llm.max_tokens,
+            timeout=settings.llm.timeout,
+        )
+
+    if provider == "gemini":
+
+        return LLMConfig(
+            provider="gemini",
+            model=settings.llm.gemini_model,
+            api_key=settings.llm.gemini_api_key,
+            temperature=settings.llm.temperature,
+            max_tokens=settings.llm.max_tokens,
+            timeout=settings.llm.timeout,
+        )
+
+    raise ValueError(
+        f"Unsupported LLM provider: {provider}"
     )
