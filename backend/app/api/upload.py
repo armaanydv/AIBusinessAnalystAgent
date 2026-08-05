@@ -7,7 +7,6 @@ from fastapi import APIRouter, File, HTTPException, UploadFile
 
 from app.core.bootstrap import ingestion_service
 from app.validators.upload_validator import validate_upload
-from app.core.bootstrap import semantic_retriever
 
 router = APIRouter()
 
@@ -52,7 +51,6 @@ async def upload_pdf(
         document, chunks = ingestion_service.ingest(
             temp_path
         )
-        semantic_retriever.set_chunks(chunks)
 
         # ---------------------------------------------------------
         # Success response
@@ -65,15 +63,13 @@ async def upload_pdf(
             "chunks_created": len(chunks.chunks),
         }
 
-    # except Exception as e:
-    #     raise HTTPException(
-    #         status_code=500,
-    #         detail=str(e),
-        # )
     except Exception:
-      traceback.print_exc()
-      raise
+        traceback.print_exc()
+        raise
 
     finally:
-        if temp_path and os.path.exists(temp_path):
+        if (
+            temp_path is not None
+            and os.path.exists(temp_path)
+        ):
             os.remove(temp_path)

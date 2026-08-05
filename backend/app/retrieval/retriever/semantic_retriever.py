@@ -1,11 +1,10 @@
 import logging
 
-from app.document.chunking.chunk import Chunk
-from app.document.chunking.chunk_collection import ChunkCollection
 from app.retrieval.embeddings.base_embedding_model import BaseEmbeddingModel
 from app.retrieval.retriever.base_retriever import BaseRetriever
 from app.retrieval.retriever.retrieval_result import RetrievalResult
 from app.retrieval.vector_store.base_vector_store import BaseVectorStore
+from app.retrieval.repository.chunk_repository import ChunkRepository
 
 logger = logging.getLogger(__name__)
 
@@ -17,28 +16,15 @@ class SemanticRetriever(BaseRetriever):
     """
 
     def __init__(
-        self,
-        embedding_model: BaseEmbeddingModel,
-        vector_store: BaseVectorStore,
-    ) -> None:
+    self,
+    embedding_model: BaseEmbeddingModel,
+    vector_store: BaseVectorStore,
+    chunk_repository: ChunkRepository,
+) -> None:
 
-        self.embedding_model = embedding_model
-        self.vector_store = vector_store
-
-        self.chunk_lookup: dict[str, Chunk] = {}
-
-    def set_chunks(
-        self,
-        chunks: ChunkCollection,
-    ) -> None:
-        """
-        Updates the retriever with the latest document chunks.
-        """
-
-        self.chunk_lookup = {
-            chunk.id: chunk
-            for chunk in chunks.chunks
-        }
+       self.embedding_model = embedding_model
+       self.vector_store = vector_store
+       self._chunk_repository = chunk_repository
 
     def retrieve(
         self,
@@ -49,7 +35,7 @@ class SemanticRetriever(BaseRetriever):
         Retrieve the top-k most relevant chunks.
         """
 
-        if not self.chunk_lookup:
+        if len(self._chunk_repository) == 0:
             logger.warning(
                 "Retriever has no chunks loaded."
             )
@@ -71,9 +57,7 @@ class SemanticRetriever(BaseRetriever):
             start=1,
         ):
 
-            chunk = self.chunk_lookup.get(
-                chunk_id
-            )
+            chunk = self._chunk_repository.get(chunk_id)
 
             if chunk is None:
                 logger.warning(

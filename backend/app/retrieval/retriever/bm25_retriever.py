@@ -1,8 +1,7 @@
 import logging
 
-from app.document.chunking.chunk import Chunk
-from app.document.chunking.chunk_collection import ChunkCollection
 from app.retrieval.bm25.bm25_index import BM25Index
+from app.retrieval.repository.chunk_repository import ChunkRepository
 from app.retrieval.retriever.base_retriever import BaseRetriever
 from app.retrieval.retriever.retrieval_result import RetrievalResult
 
@@ -17,41 +16,21 @@ class BM25Retriever(BaseRetriever):
 
     def __init__(
         self,
-        bm25_index: BM25Index,
+        index: BM25Index,
+        chunk_repository: ChunkRepository,
     ) -> None:
 
-        self._bm25_index = bm25_index
-        self._chunk_lookup: dict[str, Chunk] = {}
+        self._index = index
+        self._chunk_repository = chunk_repository
 
-    def set_chunks(
-        self,
-        chunks: ChunkCollection,
-    ) -> None:
-        """
-        Build the BM25 index and load chunks.
-        """
-
-        self._bm25_index.build(chunks)
-
-        self._chunk_lookup = {
-            chunk.id: chunk
-            for chunk in chunks.chunks
-        }
-
-        logger.info(
-            "Loaded %d chunks into BM25.",
-            len(chunks.chunks),
-        )
-
-    def clear_chunks(
+    def clear(
         self,
     ) -> None:
         """
-        Clear the retriever.
+        Clear the BM25 index.
         """
 
-        self._chunk_lookup.clear()
-        self._bm25_index.clear()
+        self._index.clear()
 
     def retrieve(
         self,
@@ -62,7 +41,7 @@ class BM25Retriever(BaseRetriever):
         Retrieve the top-k BM25 matches.
         """
 
-        if not self._chunk_lookup:
+        if len(self._chunk_repository) == 0:
 
             logger.warning(
                 "BM25 retriever has no chunks loaded."
@@ -70,7 +49,7 @@ class BM25Retriever(BaseRetriever):
 
             return []
 
-        matches = self._bm25_index.search(
+        matches = self._index.search(
             query=query,
             k=k,
         )
@@ -82,7 +61,7 @@ class BM25Retriever(BaseRetriever):
             start=1,
         ):
 
-            chunk = self._chunk_lookup.get(
+            chunk = self._chunk_repository.get(
                 chunk_id
             )
 

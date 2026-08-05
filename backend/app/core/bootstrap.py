@@ -1,5 +1,3 @@
-from app.core.settings import get_settings
-
 from app.document.chunking.chunk_builder import ChunkBuilder
 from app.document.hierarchy.hierarchy_builder import HierarchyBuilder
 from app.document.indexing.index_builder import IndexBuilder
@@ -24,20 +22,38 @@ from app.services.rag_service import RAGService
 from app.retrieval.bm25.bm25_config import BM25Config
 from app.retrieval.bm25.bm25_index import BM25Index
 from app.retrieval.bm25.tokenizer import BM25Tokenizer
+
 from app.retrieval.embeddings.bge_embedding_model import (
     BGEEmbeddingModel,
 )
 from app.retrieval.embeddings.embedding_generator import (
     EmbeddingGenerator,
 )
+
+from app.retrieval.fusion.reciprocal_rank_fusion import (
+    ReciprocalRankFusion,
+)
+
+from app.retrieval.repository.chunk_repository import (
+    ChunkRepository,
+)
+
+from app.retrieval.retriever.bm25_retriever import (
+    BM25Retriever,
+)
+from app.retrieval.retriever.hybrid_retriever import (
+    HybridRetriever,
+)
 from app.retrieval.retriever.semantic_retriever import (
     SemanticRetriever,
 )
+
 from app.retrieval.vector_store.faiss_vector_store import (
     FAISSVectorStore,
 )
 
 from app.storage.artifact_storage import ArtifactStorage
+
 
 # ==========================================================
 # Core Components
@@ -83,12 +99,32 @@ bm25_index = BM25Index(
 )
 
 # ==========================================================
+# Chunk Repository
+# ==========================================================
+
+chunk_repository = ChunkRepository()
+
+# ==========================================================
 # Retrievers
 # ==========================================================
 
 semantic_retriever = SemanticRetriever(
     embedding_model=embedding_model,
     vector_store=vector_store,
+    chunk_repository=chunk_repository,
+)
+
+bm25_retriever = BM25Retriever(
+    index=bm25_index,
+    chunk_repository=chunk_repository,
+)
+
+fusion = ReciprocalRankFusion()
+
+hybrid_retriever = HybridRetriever(
+    semantic_retriever=semantic_retriever,
+    bm25_retriever=bm25_retriever,
+    fusion=fusion,
 )
 
 # ==========================================================
@@ -121,8 +157,7 @@ for document_id in artifact_storage.list_documents():
             document_id=document_id,
         )
 
-        # Temporary until SemanticRetriever is refactored.
-        semantic_retriever.set_chunks(
+        chunk_repository.add_many(
             chunks,
         )
 
@@ -177,11 +212,12 @@ ingestion_service = IngestionService(
     embedding_generator=embedding_generator,
     vector_store=vector_store,
     bm25_index=bm25_index,
+    chunk_repository=chunk_repository,
     artifact_storage=artifact_storage,
 )
 
 rag_service = RAGService(
-    retriever=semantic_retriever,
+    retriever=hybrid_retriever,
     prompt_builder=prompt_builder,
     llm=llm,
     output_parser=output_parser,

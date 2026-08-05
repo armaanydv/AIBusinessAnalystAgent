@@ -12,6 +12,7 @@ from app.preprocessing.document_preprocessor import DocumentPreprocessor
 
 from app.retrieval.bm25.bm25_index import BM25Index
 from app.retrieval.embeddings.embedding_generator import EmbeddingGenerator
+from app.retrieval.repository.chunk_repository import ChunkRepository
 from app.retrieval.vector_store.base_vector_store import BaseVectorStore
 from app.retrieval.vector_store.vector_record import VectorRecord
 
@@ -34,6 +35,7 @@ class IngestionService:
         embedding_generator: EmbeddingGenerator,
         vector_store: BaseVectorStore,
         bm25_index: BM25Index,
+        chunk_repository: ChunkRepository,
         artifact_storage: ArtifactStorage,
     ) -> None:
 
@@ -47,6 +49,7 @@ class IngestionService:
 
         self._vector_store = vector_store
         self._bm25_index = bm25_index
+        self._chunk_repository = chunk_repository
 
         self._artifact_storage = artifact_storage
 
@@ -96,6 +99,14 @@ class IngestionService:
 
         chunks = self._chunk_builder.build(
             document
+        )
+
+        # ---------------------------------------------------------
+        # Update chunk repository
+        # ---------------------------------------------------------
+
+        self._chunk_repository.add_many(
+            chunks
         )
 
         # ---------------------------------------------------------
