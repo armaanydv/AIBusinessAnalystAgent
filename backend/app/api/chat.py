@@ -24,7 +24,8 @@ def chat(
                 {
                     "chunk_id": result.chunk.id,
                     "title": result.chunk.title,
-                    "similarity_score": result.similarity_score,
+                    "retrieval_score": result.retrieval_score,
+                    "rerank_score": result.rerank_score,
                     "text": result.chunk.text,
                 }
                 for result in response.retrieval_results

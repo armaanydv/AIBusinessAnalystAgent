@@ -21,6 +21,10 @@ from app.retrieval.repository.chunk_repository import (
     ChunkRepository,
 )
 
+from app.retrieval.reranker.cross_encoder_reranker import (
+    CrossEncoderReranker,
+)
+
 from app.retrieval.retriever.bm25_retriever import (
     BM25Retriever,
 )
@@ -38,7 +42,6 @@ from app.retrieval.vector_store.vector_record import (
     VectorRecord,
 )
 
-
 # ==========================================================
 # Sample Chunks
 # ==========================================================
@@ -48,7 +51,11 @@ chunks = ChunkCollection(
         Chunk(
             id="chunk_1",
             title="Artificial Intelligence",
-            text="Artificial Intelligence is transforming healthcare.",
+            text=(
+                "Artificial Intelligence improves hospitals by "
+                "helping doctors diagnose diseases faster and "
+                "more accurately."
+            ),
             metadata=ChunkMetadata(
                 source_document="test.pdf",
                 start_page=1,
@@ -59,7 +66,10 @@ chunks = ChunkCollection(
         Chunk(
             id="chunk_2",
             title="Machine Learning",
-            text="Machine learning models require quality data.",
+            text=(
+                "Machine learning algorithms require high-quality "
+                "training data to achieve good performance."
+            ),
             metadata=ChunkMetadata(
                 source_document="test.pdf",
                 start_page=2,
@@ -70,7 +80,10 @@ chunks = ChunkCollection(
         Chunk(
             id="chunk_3",
             title="Finance",
-            text="Financial reports summarize business performance.",
+            text=(
+                "Financial reports summarize revenue, expenses, "
+                "profit and business performance."
+            ),
             metadata=ChunkMetadata(
                 source_document="test.pdf",
                 start_page=3,
@@ -82,11 +95,14 @@ chunks = ChunkCollection(
 )
 
 # ==========================================================
-# Chunk Repository
+# Repository
 # ==========================================================
 
 chunk_repository = ChunkRepository()
-chunk_repository.add_many(chunks)
+
+chunk_repository.add_many(
+    chunks,
+)
 
 # ==========================================================
 # Embeddings
@@ -99,11 +115,11 @@ embedding_generator = EmbeddingGenerator(
 )
 
 embeddings = embedding_generator.generate(
-    chunks
+    chunks,
 )
 
 # ==========================================================
-# FAISS
+# Vector Store
 # ==========================================================
 
 vector_store = FAISSVectorStore(
@@ -118,7 +134,9 @@ records = [
     for embedding in embeddings
 ]
 
-vector_store.add_many(records)
+vector_store.add_many(
+    records,
+)
 
 # ==========================================================
 # BM25
@@ -129,7 +147,9 @@ bm25_index = BM25Index(
     config=BM25Config(),
 )
 
-bm25_index.build(chunks)
+bm25_index.build(
+    chunks,
+)
 
 # ==========================================================
 # Retrievers
@@ -155,27 +175,53 @@ hybrid_retriever = HybridRetriever(
 )
 
 # ==========================================================
+# Reranker
+# ==========================================================
+
+reranker = CrossEncoderReranker()
+
+# ==========================================================
 # Query
 # ==========================================================
 
-results = hybrid_retriever.retrieve(
-    query="artificial intelligence",
+query = "How does AI help hospitals?"
+
+retrieval_results = hybrid_retriever.retrieve(
+    query=query,
     k=3,
 )
 
-# ==========================================================
-# Results
-# ==========================================================
+print()
+print("=" * 80)
+print("HYBRID RETRIEVAL")
+print("=" * 80)
+
+for result in retrieval_results:
+
+    print(f"Rank            : {result.rank}")
+    print(f"Chunk ID        : {result.chunk.id}")
+    print(f"Hybrid Score    : {result.similarity_score:.6f}")
+    print(f"Title           : {result.chunk.title}")
+    print(f"Text            : {result.chunk.text}")
+    print("-" * 80)
+
+reranked_results = reranker.rerank(
+    query=query,
+    retrieval_results=retrieval_results,
+    k=3,
+)
 
 print()
-print("Hybrid Retrieval Results")
-print("=" * 60)
+print("=" * 80)
+print("CROSS ENCODER RERANKING")
+print("=" * 80)
 
-for result in results:
+for result in reranked_results:
 
-    print(f"Rank     : {result.rank}")
-    print(f"Chunk ID : {result.chunk.id}")
-    print(f"Score    : {result.similarity_score:.6f}")
-    print(f"Title    : {result.chunk.title}")
-    print(f"Text     : {result.chunk.text}")
-    print("-" * 60)
+    print(f"Rank            : {result.rank}")
+    print(f"Chunk ID        : {result.chunk.id}")
+    print(f"Hybrid Score    : {result.retrieval_score:.6f}")
+    print(f"Rerank Score    : {result.rerank_score:.6f}")
+    print(f"Title           : {result.chunk.title}")
+    print(f"Text            : {result.chunk.text}")
+    print("-" * 80)

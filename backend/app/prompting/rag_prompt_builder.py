@@ -1,6 +1,8 @@
 from app.prompting.base_prompt_builder import BasePromptBuilder
 from app.prompting.prompt_templates import PromptTemplates
-from app.retrieval.retriever.retrieval_result import RetrievalResult
+from app.retrieval.reranker.rerank_result import (
+    RerankResult,
+)
 
 
 class RAGPromptBuilder(BasePromptBuilder):
@@ -11,7 +13,7 @@ class RAGPromptBuilder(BasePromptBuilder):
     def build(
         self,
         query: str,
-        retrieval_results: list[RetrievalResult],
+        retrieval_results: list[RerankResult],
     ) -> str:
         context = self._build_context(retrieval_results)
 
@@ -22,7 +24,7 @@ class RAGPromptBuilder(BasePromptBuilder):
 
     def _build_context(
         self,
-        retrieval_results: list[RetrievalResult],
+        retrieval_results: list[RerankResult]
     ) -> str:
         """
         Convert retrieved chunks into a formatted context block.

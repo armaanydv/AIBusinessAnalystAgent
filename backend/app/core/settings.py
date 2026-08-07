@@ -59,11 +59,28 @@ class StorageSettings(BaseAppSettings):
         alias="STORAGE_ROOT_DIRECTORY",
     )
 
+class RerankerSettings(BaseAppSettings):
+    model: str = Field(
+        default="BAAI/bge-reranker-base",
+        alias="RERANKER_MODEL",
+    )
+
+    top_k: int = Field(
+        default=5,
+        alias="RERANKER_TOP_K",
+    )
+
+    batch_size: int = Field(
+        default=16,
+        alias="RERANKER_BATCH_SIZE",
+    )
+
 
 class Settings:
     def __init__(self) -> None:
         self.llm = LLMSettings()
         self.storage = StorageSettings()
+        self.reranker = RerankerSettings()
 
 
 @lru_cache

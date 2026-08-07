@@ -54,6 +54,13 @@ from app.retrieval.vector_store.faiss_vector_store import (
 
 from app.storage.artifact_storage import ArtifactStorage
 
+from app.retrieval.reranker.cross_encoder_reranker import (
+    CrossEncoderReranker,
+)
+from app.retrieval.reranker.rerank_config import (
+    get_reranker_config,
+)
+
 
 # ==========================================================
 # Core Components
@@ -125,6 +132,9 @@ hybrid_retriever = HybridRetriever(
     semantic_retriever=semantic_retriever,
     bm25_retriever=bm25_retriever,
     fusion=fusion,
+)
+reranker = CrossEncoderReranker(
+    config=get_reranker_config(),
 )
 
 # ==========================================================
@@ -218,6 +228,7 @@ ingestion_service = IngestionService(
 
 rag_service = RAGService(
     retriever=hybrid_retriever,
+    reranker=reranker,
     prompt_builder=prompt_builder,
     llm=llm,
     output_parser=output_parser,

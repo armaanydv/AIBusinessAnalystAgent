@@ -10,6 +10,9 @@ from app.prompting.base_prompt_builder import BasePromptBuilder
 from app.rag.rag_request import RAGRequest
 from app.rag.rag_response import RAGResponse
 from app.retrieval.retriever.base_retriever import BaseRetriever
+from app.retrieval.reranker.base_reranker import (
+    BaseReranker,
+)
 
 
 class RAGService:
@@ -20,11 +23,13 @@ class RAGService:
     def __init__(
         self,
         retriever: BaseRetriever,
+        reranker: BaseReranker,
         prompt_builder: BasePromptBuilder,
         llm: BaseLLM,
         output_parser: OutputParser,
     ) -> None:
         self._retriever = retriever
+        self._reranker = reranker
         self._prompt_builder = prompt_builder
         self._llm = llm
         self._output_parser = output_parser
@@ -41,10 +46,14 @@ class RAGService:
             query=request.query,
             k=request.top_k,
         )
+        reranked_results = self._reranker.rerank(
+            query=request.query,
+             retrieval_results=retrieval_results,
+         )
 
         prompt = self._prompt_builder.build(
             query=request.query,
-            retrieval_results=retrieval_results,
+            retrieval_results=reranked_results,
         )
 
         llm_response = self._llm.generate(
@@ -60,6 +69,6 @@ class RAGService:
 
         return RAGResponse(
             answer=parsed_output.answer,
-            retrieval_results=retrieval_results,
+            retrieval_results=reranked_results,
             llm_response=llm_response,
         )
