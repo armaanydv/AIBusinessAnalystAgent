@@ -10,14 +10,13 @@ from app.prompting.base_prompt_builder import BasePromptBuilder
 from app.rag.rag_request import RAGRequest
 from app.rag.rag_response import RAGResponse
 from app.retrieval.retriever.base_retriever import BaseRetriever
-from app.retrieval.reranker.base_reranker import (
-    BaseReranker,
-)
+from app.retrieval.retriever.retrieval_result import RetrievalResult
+from app.retrieval.reranker.base_reranker import BaseReranker
 
 
 class RAGService:
     """
-    Orchestrates the complete Retrieval-Augmented Generation pipeline.
+    Orchestrates the Retrieval-Augmented Generation pipeline.
     """
 
     def __init__(
@@ -34,6 +33,24 @@ class RAGService:
         self._llm = llm
         self._output_parser = output_parser
 
+    def retrieve(
+        self,
+        request: RAGRequest,
+    ) -> list[RetrievalResult]:
+        """
+        Retrieve and rerank relevant document chunks.
+        """
+
+        retrieval_results = self._retriever.retrieve(
+            query=request.query,
+            k=request.top_k,
+        )
+
+        return self._reranker.rerank(
+            query=request.query,
+            retrieval_results=retrieval_results,
+        )
+
     def generate(
         self,
         request: RAGRequest,
@@ -42,14 +59,7 @@ class RAGService:
         Generate an answer using Retrieval-Augmented Generation.
         """
 
-        retrieval_results = self._retriever.retrieve(
-            query=request.query,
-            k=request.top_k,
-        )
-        reranked_results = self._reranker.rerank(
-            query=request.query,
-             retrieval_results=retrieval_results,
-         )
+        reranked_results = self.retrieve(request)
 
         prompt = self._prompt_builder.build(
             query=request.query,
