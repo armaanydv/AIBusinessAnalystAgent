@@ -5,10 +5,20 @@ from app.llm.output_parser import OutputParser
 
 
 class QuestionAnalyzer:
+    """
+    Analyzes a user's business question and extracts the
+    analytical requirements needed by the analysis pipeline.
+    """
+
     def __init__(self, llm: BaseLLM) -> None:
         self._llm = llm
 
     def analyze(self, query: str) -> AnalysisRequest:
+        """
+        Analyze a business question and return its
+        structured analytical requirements.
+        """
+
         prompt = self._build_prompt(query)
 
         request = LLMRequest(
@@ -41,11 +51,22 @@ Extract the following:
 - analysis_type
 
 Rules:
+
 1. Do not invent information.
 2. If a requirement cannot be determined, return null.
 3. Return dimensions and filters as arrays of strings.
 4. Return ONLY valid JSON.
 5. Do not include markdown or code fences.
+6. analysis_type MUST be one of the following values:
+   - comparative
+   - trend
+   - root_cause
+   - contribution
+   - swot
+7. If the question does not clearly correspond to one of
+   the supported analysis types, return null for analysis_type.
+8. Use the exact analysis_type values listed above.
+9. Do not combine multiple analysis types into one value.
 
 Expected JSON structure:
 

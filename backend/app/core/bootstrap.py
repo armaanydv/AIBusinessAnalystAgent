@@ -61,6 +61,15 @@ from app.retrieval.reranker.rerank_config import (
     get_reranker_config,
 )
 
+from app.analysis.analysis_selector import AnalysisSelector
+from app.analysis.analysis_service import AnalysisService
+from app.analysis.question_analyzer import QuestionAnalyzer
+from app.analysis.retrieval_planner import RetrievalPlanner
+
+from app.analysis.techniques.comparative_analysis import (
+    ComparativeAnalysis,
+)
+
 
 # ==========================================================
 # Core Components
@@ -78,6 +87,7 @@ hierarchy_builder = HierarchyBuilder()
 
 chunk_builder = ChunkBuilder()
 
+
 # ==========================================================
 # Embeddings
 # ==========================================================
@@ -87,6 +97,7 @@ embedding_model = BGEEmbeddingModel()
 embedding_generator = EmbeddingGenerator(
     embedding_model=embedding_model,
 )
+
 
 # ==========================================================
 # Search Indexes
@@ -105,11 +116,13 @@ bm25_index = BM25Index(
     config=bm25_config,
 )
 
+
 # ==========================================================
 # Chunk Repository
 # ==========================================================
 
 chunk_repository = ChunkRepository()
+
 
 # ==========================================================
 # Retrievers
@@ -133,15 +146,18 @@ hybrid_retriever = HybridRetriever(
     bm25_retriever=bm25_retriever,
     fusion=fusion,
 )
+
 reranker = CrossEncoderReranker(
     config=get_reranker_config(),
 )
+
 
 # ==========================================================
 # Storage
 # ==========================================================
 
 artifact_storage = ArtifactStorage()
+
 
 # ==========================================================
 # Restore Persisted Knowledge Base
@@ -190,11 +206,13 @@ print(
     f"containing {len(vector_store)} vectors."
 )
 
+
 # ==========================================================
 # Prompting
 # ==========================================================
 
 prompt_builder = RAGPromptBuilder()
+
 
 # ==========================================================
 # Output Parsing
@@ -202,14 +220,77 @@ prompt_builder = RAGPromptBuilder()
 
 output_parser = OutputParser()
 
+
 # ==========================================================
 # LLM
 # ==========================================================
 
 llm = LLMFactory.create()
 
+
 # ==========================================================
-# Services
+# RAG Service
+# ==========================================================
+
+rag_service = RAGService(
+    retriever=hybrid_retriever,
+    reranker=reranker,
+    prompt_builder=prompt_builder,
+    llm=llm,
+    output_parser=output_parser,
+)
+
+
+# ==========================================================
+# Question Analysis
+# ==========================================================
+
+question_analyzer = QuestionAnalyzer(
+    llm=llm,
+)
+
+
+# ==========================================================
+# Retrieval Planning
+# ==========================================================
+
+retrieval_planner = RetrievalPlanner()
+
+
+# ==========================================================
+# Analysis Techniques
+# ==========================================================
+
+comparative_analysis = ComparativeAnalysis(
+    llm=llm,
+)
+
+
+# ==========================================================
+# Analysis Selector
+# ==========================================================
+
+analysis_selector = AnalysisSelector(
+    analyses={
+        "comparative": comparative_analysis,
+    }
+)
+
+
+# ==========================================================
+# Analysis Service
+# ==========================================================
+
+analysis_service = AnalysisService(
+    question_analyzer=question_analyzer,
+    retrieval_planner=retrieval_planner,
+    rag_service=rag_service,
+    analysis_selector=analysis_selector,
+)
+
+
+# ==========================================================
+# Ingestion Service
 # ==========================================================
 
 ingestion_service = IngestionService(
@@ -224,12 +305,4 @@ ingestion_service = IngestionService(
     bm25_index=bm25_index,
     chunk_repository=chunk_repository,
     artifact_storage=artifact_storage,
-)
-
-rag_service = RAGService(
-    retriever=hybrid_retriever,
-    reranker=reranker,
-    prompt_builder=prompt_builder,
-    llm=llm,
-    output_parser=output_parser,
 )
