@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 class AnalysisRequest(BaseModel):
@@ -9,6 +9,14 @@ class AnalysisRequest(BaseModel):
     comparison: str | None = None
     objective: str | None = None
     analysis_type: str | None = None
+
+    @field_validator("dimensions", "filters", mode="before")
+    @classmethod
+    def normalize_lists(cls, value):
+        if value is None:
+            return []
+
+        return value
 
     def is_complete(self) -> bool:
         return len(self.missing_requirements()) == 0

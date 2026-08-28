@@ -75,6 +75,9 @@ from app.analysis.techniques.trend_analysis import (
 from app.analysis.techniques.ranking_analysis import (
     RankingAnalysis,
 )
+from app.analysis.techniques.root_cause_analysis import (
+    RootCauseAnalysis,
+)
 
 
 # ==========================================================
@@ -276,6 +279,9 @@ trend_analysis = TrendAnalysis(
 ranking_analysis = RankingAnalysis(
     llm=llm,
 )
+root_cause_analysis = RootCauseAnalysis(
+    llm=llm,
+)
 
 
 # ==========================================================
@@ -287,6 +293,7 @@ analysis_selector = AnalysisSelector(
         "comparative": comparative_analysis,
         "trend": trend_analysis,
         "ranking": ranking_analysis,
+        "root_cause": root_cause_analysis,
     }
 )
 
