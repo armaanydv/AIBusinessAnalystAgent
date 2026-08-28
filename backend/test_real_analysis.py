@@ -1,7 +1,7 @@
 from app.core.bootstrap import analysis_service
 
 
-query = "Why did operating expenses increase from Q2 2026 to Q3 2026? Identify the main factors contributing to the increase."
+query = "What contributed most to the increase in operating expenses from Q2 2026 to Q3 2026?"
 
 
 result = analysis_service.analyze(query)

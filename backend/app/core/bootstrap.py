@@ -78,6 +78,9 @@ from app.analysis.techniques.ranking_analysis import (
 from app.analysis.techniques.root_cause_analysis import (
     RootCauseAnalysis,
 )
+from app.analysis.techniques.contribution_analysis import (
+    ContributionAnalysis,
+)
 
 
 # ==========================================================
@@ -282,6 +285,9 @@ ranking_analysis = RankingAnalysis(
 root_cause_analysis = RootCauseAnalysis(
     llm=llm,
 )
+contribution_analysis = ContributionAnalysis(
+    llm=llm,
+)
 
 
 # ==========================================================
@@ -294,6 +300,7 @@ analysis_selector = AnalysisSelector(
         "trend": trend_analysis,
         "ranking": ranking_analysis,
         "root_cause": root_cause_analysis,
+        "contribution": contribution_analysis,
     }
 )
 
