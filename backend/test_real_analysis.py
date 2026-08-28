@@ -1,7 +1,7 @@
 from app.core.bootstrap import analysis_service
 
 
-query = "What contributed most to the increase in operating expenses from Q2 2026 to Q3 2026?"
+query = "What are the strengths, weaknesses, opportunities, and threats for Acme Retail Solutions based on its Q1 to Q3 2026 performance?"
 
 
 result = analysis_service.analyze(query)

@@ -81,6 +81,9 @@ from app.analysis.techniques.root_cause_analysis import (
 from app.analysis.techniques.contribution_analysis import (
     ContributionAnalysis,
 )
+from app.analysis.techniques.swot_analysis import (
+    SWOTAnalysis,
+)
 
 
 # ==========================================================
@@ -288,6 +291,9 @@ root_cause_analysis = RootCauseAnalysis(
 contribution_analysis = ContributionAnalysis(
     llm=llm,
 )
+swot_analysis = SWOTAnalysis(
+    llm=llm,
+)
 
 
 # ==========================================================
@@ -301,6 +307,7 @@ analysis_selector = AnalysisSelector(
         "ranking": ranking_analysis,
         "root_cause": root_cause_analysis,
         "contribution": contribution_analysis,
+        "swot": swot_analysis,
     }
 )
 
