@@ -69,6 +69,9 @@ from app.analysis.retrieval_planner import RetrievalPlanner
 from app.analysis.techniques.comparative_analysis import (
     ComparativeAnalysis,
 )
+from app.analysis.techniques.trend_analysis import (
+    TrendAnalysis,
+)
 
 
 # ==========================================================
@@ -264,6 +267,9 @@ retrieval_planner = RetrievalPlanner()
 comparative_analysis = ComparativeAnalysis(
     llm=llm,
 )
+trend_analysis = TrendAnalysis(
+    llm=llm,
+)
 
 
 # ==========================================================
@@ -273,6 +279,7 @@ comparative_analysis = ComparativeAnalysis(
 analysis_selector = AnalysisSelector(
     analyses={
         "comparative": comparative_analysis,
+        "trend": trend_analysis,
     }
 )
 

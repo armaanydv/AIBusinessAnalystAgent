@@ -2,11 +2,13 @@ from app.core.bootstrap import analysis_service
 
 
 query = (
-    "Compare revenue for the North region "
-    "in the last quarter with the previous quarter."
+    "What trends can be observed in revenue "
+    "from Q1 2026 to Q3 2026?"
 )
 
+
 result = analysis_service.analyze(query)
+
 
 print("\n================ ANALYSIS RESULT ================\n")
 
@@ -15,14 +17,14 @@ print(result.analysis_type)
 
 print("\nFindings:")
 for finding in result.findings:
-    print("-", finding)
+    print(f"- {finding}")
 
 print("\nConclusions:")
 for conclusion in result.conclusions:
-    print("-", conclusion)
+    print(f"- {conclusion}")
 
 print("\nSupporting Evidence:")
 for evidence in result.supporting_evidence:
-    print("-", evidence)
+    print(f"- {evidence}")
 
-print("\n==================================================\n")
+print("\n==================================================")

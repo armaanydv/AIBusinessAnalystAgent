@@ -22,10 +22,17 @@ class AnalysisRequest(BaseModel):
         if not self.time_period:
             missing.append("time_period")
 
-        if not self.comparison:
-            missing.append("comparison")
+        if not self.objective:
+            missing.append("objective")
 
         if not self.analysis_type:
             missing.append("analysis_type")
+
+        # Comparative analysis specifically requires a comparison.
+        if (
+            self.analysis_type == "comparative"
+            and not self.comparison
+        ):
+            missing.append("comparison")
 
         return missing
