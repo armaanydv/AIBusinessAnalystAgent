@@ -1,10 +1,7 @@
 from app.core.bootstrap import analysis_service
 
 
-query = (
-    "What trends can be observed in revenue "
-    "from Q1 2026 to Q3 2026?"
-)
+query = "Which region had the largest revenue growth from Q2 2026 to Q3 2026?"
 
 
 result = analysis_service.analyze(query)

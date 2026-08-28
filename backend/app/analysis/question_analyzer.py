@@ -57,16 +57,45 @@ Rules:
 3. Return dimensions and filters as arrays of strings.
 4. Return ONLY valid JSON.
 5. Do not include markdown or code fences.
+
 6. analysis_type MUST be one of the following values:
    - comparative
    - trend
+   - ranking
    - root_cause
    - contribution
    - swot
-7. If the question does not clearly correspond to one of
-   the supported analysis types, return null for analysis_type.
-8. Use the exact analysis_type values listed above.
-9. Do not combine multiple analysis types into one value.
+
+7. Use "ranking" when the question asks to:
+   - identify the highest or lowest performing dimension
+   - find which region, product, category, or segment performed best or worst
+   - determine the largest or smallest growth
+   - rank multiple dimensions by a metric
+   - identify the top or bottom performer
+
+8. Use "comparative" when the question asks to compare
+   specific values between two periods, dimensions, or groups
+   without asking for the highest, lowest, best, worst, or ranking.
+
+9. Use "trend" when the question asks about the direction,
+   pattern, or trajectory of a metric across multiple periods.
+
+10. Use "root_cause" when the question asks why a metric,
+    event, increase, decrease, or change occurred.
+
+11. Use "contribution" when the question asks which factors,
+    dimensions, categories, or components contributed to a
+    total change or outcome.
+
+12. Use "swot" when the question explicitly asks for a
+    strengths, weaknesses, opportunities, and threats analysis.
+
+13. If the question does not clearly correspond to one of
+    the supported analysis types, return null for analysis_type.
+
+14. Use the exact analysis_type values listed above.
+
+15. Do not combine multiple analysis types into one value.
 
 Expected JSON structure:
 

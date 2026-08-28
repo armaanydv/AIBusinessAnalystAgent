@@ -72,6 +72,9 @@ from app.analysis.techniques.comparative_analysis import (
 from app.analysis.techniques.trend_analysis import (
     TrendAnalysis,
 )
+from app.analysis.techniques.ranking_analysis import (
+    RankingAnalysis,
+)
 
 
 # ==========================================================
@@ -270,6 +273,9 @@ comparative_analysis = ComparativeAnalysis(
 trend_analysis = TrendAnalysis(
     llm=llm,
 )
+ranking_analysis = RankingAnalysis(
+    llm=llm,
+)
 
 
 # ==========================================================
@@ -280,6 +286,7 @@ analysis_selector = AnalysisSelector(
     analyses={
         "comparative": comparative_analysis,
         "trend": trend_analysis,
+        "ranking": ranking_analysis,
     }
 )
 
