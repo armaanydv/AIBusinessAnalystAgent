@@ -2,17 +2,34 @@ import traceback
 
 from fastapi import APIRouter, HTTPException
 
+from app.api.schemas.analysis import (
+    AnalysisRequestSchema,
+    AnalysisResponseSchema,
+)
 from app.core.bootstrap import analysis_service
+
 
 router = APIRouter()
 
 
-@router.post("/analysis")
-def analyze(query: str):
+@router.post(
+    "/analysis",
+    response_model=AnalysisResponseSchema,
+)
+def analyze(
+    request: AnalysisRequestSchema,
+):
     try:
-        result = analysis_service.analyze(query)
+        result = analysis_service.analyze(
+            request.query
+        )
 
-        return result
+        return AnalysisResponseSchema(
+            analysis_type=result.analysis_type,
+            findings=result.findings,
+            conclusions=result.conclusions,
+            supporting_evidence=result.supporting_evidence,
+        )
 
     except ValueError as exc:
         raise HTTPException(
@@ -25,5 +42,5 @@ def analyze(query: str):
 
         raise HTTPException(
             status_code=500,
-            detail=str(exc),
+            detail="Internal server error.",
         ) from exc
