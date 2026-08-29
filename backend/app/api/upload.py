@@ -6,7 +6,11 @@ import traceback
 from fastapi import APIRouter, File, HTTPException, UploadFile
 
 from app.core.bootstrap import ingestion_service
+from app.exceptions.ingestion_exceptions import (
+    EmptyDocumentError,
+)
 from app.validators.upload_validator import validate_upload
+
 
 router = APIRouter()
 
@@ -62,6 +66,12 @@ async def upload_pdf(
             "pages": len(document.pages),
             "chunks_created": len(chunks.chunks),
         }
+
+    except EmptyDocumentError as exc:
+        raise HTTPException(
+            status_code=422,
+            detail=str(exc),
+        ) from exc
 
     except Exception:
         traceback.print_exc()

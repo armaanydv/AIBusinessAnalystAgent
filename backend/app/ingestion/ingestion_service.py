@@ -17,6 +17,9 @@ from app.retrieval.vector_store.base_vector_store import BaseVectorStore
 from app.retrieval.vector_store.vector_record import VectorRecord
 
 from app.storage.artifact_storage import ArtifactStorage
+from app.exceptions.ingestion_exceptions import (
+    EmptyDocumentError,
+)
 
 
 class IngestionService:
@@ -99,6 +102,10 @@ class IngestionService:
 
         chunks = self._chunk_builder.build(
             document
+        )
+        if not chunks.chunks:
+          raise EmptyDocumentError(
+        "No ingestible content was found in the document."
         )
 
         # ---------------------------------------------------------
