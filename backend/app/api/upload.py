@@ -5,6 +5,7 @@ import traceback
 
 from fastapi import APIRouter, File, HTTPException, UploadFile
 
+from app.api.schemas.upload import UploadResponseSchema
 from app.core.bootstrap import ingestion_service
 from app.exceptions.ingestion_exceptions import (
     EmptyDocumentError,
@@ -15,23 +16,31 @@ from app.validators.upload_validator import validate_upload
 router = APIRouter()
 
 
-@router.post("/upload")
+@router.post(
+    "/upload",
+    response_model=UploadResponseSchema,
+)
 async def upload_pdf(
     file: UploadFile = File(...),
 ):
-    # ---------------------------------------------------------
-    # Validate upload
-    # ---------------------------------------------------------
-
-    if not validate_upload():
-        raise HTTPException(
-            status_code=400,
-            detail="Upload validation failed.",
-        )
-
     temp_path = None
 
     try:
+        # ---------------------------------------------------------
+        # Read uploaded file
+        # ---------------------------------------------------------
+
+        content = await file.read()
+
+        # ---------------------------------------------------------
+        # Validate upload
+        # ---------------------------------------------------------
+
+        validate_upload(
+            filename=file.filename,
+            content=content,
+        )
+
         # ---------------------------------------------------------
         # Save uploaded file temporarily
         # ---------------------------------------------------------
@@ -43,7 +52,6 @@ async def upload_pdf(
             suffix=suffix,
         ) as temp_file:
 
-            content = await file.read()
             temp_file.write(content)
 
             temp_path = temp_file.name
@@ -60,12 +68,18 @@ async def upload_pdf(
         # Success response
         # ---------------------------------------------------------
 
-        return {
-            "message": "Document ingested successfully.",
-            "document_id": document.metadata.document_id,
-            "pages": len(document.pages),
-            "chunks_created": len(chunks.chunks),
-        }
+        return UploadResponseSchema(
+            message="Document ingested successfully.",
+            document_id=document.metadata.document_id,
+            pages=len(document.pages),
+            chunks_created=len(chunks.chunks),
+        )
+
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=400,
+            detail=str(exc),
+        ) from exc
 
     except EmptyDocumentError as exc:
         raise HTTPException(
@@ -73,9 +87,19 @@ async def upload_pdf(
             detail=str(exc),
         ) from exc
 
-    except Exception:
-        traceback.print_exc()
+    except HTTPException:
         raise
+
+    except Exception as exc:
+        traceback.print_exc()
+
+        raise HTTPException(
+            status_code=500,
+            detail=(
+                "An unexpected error occurred "
+                "during document ingestion."
+            ),
+        ) from exc
 
     finally:
         if (
