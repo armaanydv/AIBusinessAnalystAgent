@@ -1,15 +1,11 @@
 from pathlib import Path
 import os
 import tempfile
-import traceback
 
-from fastapi import APIRouter, File, HTTPException, UploadFile
+from fastapi import APIRouter, File, UploadFile
 
 from app.api.schemas.upload import UploadResponseSchema
 from app.core.bootstrap import ingestion_service
-from app.exceptions.ingestion_exceptions import (
-    EmptyDocumentError,
-)
 from app.validators.upload_validator import validate_upload
 
 
@@ -20,7 +16,7 @@ router = APIRouter()
     "/upload",
     response_model=UploadResponseSchema,
 )
-async def upload_pdf(
+async def upload_document(
     file: UploadFile = File(...),
 ):
     temp_path = None
@@ -74,32 +70,6 @@ async def upload_pdf(
             pages=len(document.pages),
             chunks_created=len(chunks.chunks),
         )
-
-    except ValueError as exc:
-        raise HTTPException(
-            status_code=400,
-            detail=str(exc),
-        ) from exc
-
-    except EmptyDocumentError as exc:
-        raise HTTPException(
-            status_code=422,
-            detail=str(exc),
-        ) from exc
-
-    except HTTPException:
-        raise
-
-    except Exception as exc:
-        traceback.print_exc()
-
-        raise HTTPException(
-            status_code=500,
-            detail=(
-                "An unexpected error occurred "
-                "during document ingestion."
-            ),
-        ) from exc
 
     finally:
         if (
