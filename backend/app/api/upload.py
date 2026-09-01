@@ -5,7 +5,10 @@ import tempfile
 from fastapi import APIRouter, File, UploadFile
 
 from app.api.schemas.upload import UploadResponseSchema
-from app.core.bootstrap import ingestion_service
+from app.core.bootstrap import (
+    artifact_storage,
+    ingestion_service,
+)
 from app.validators.upload_validator import validate_upload
 
 
@@ -58,6 +61,27 @@ async def upload_document(
 
         document, chunks = ingestion_service.ingest(
             temp_path
+        )
+
+        # ---------------------------------------------------------
+        # Enrich metadata with original upload information
+        # ---------------------------------------------------------
+
+        original_path = Path(file.filename)
+
+        document.metadata.title = original_path.stem
+        document.metadata.source_file = original_path.name
+        document.metadata.file_type = (
+            original_path.suffix.lstrip(".").lower()
+        )
+
+        # ---------------------------------------------------------
+        # Persist updated metadata
+        # ---------------------------------------------------------
+
+        artifact_storage.save_metadata(
+            document_id=document.metadata.document_id,
+            metadata=document.metadata,
         )
 
         # ---------------------------------------------------------
