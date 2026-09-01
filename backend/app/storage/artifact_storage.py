@@ -1,9 +1,9 @@
 from pathlib import Path
-from app.retrieval.bm25.bm25_index import BM25Index
 
 from app.core.settings import get_settings
 from app.document.chunking.chunk_collection import ChunkCollection
 from app.models.structured_document import StructuredDocument
+from app.retrieval.bm25.bm25_index import BM25Index
 from app.retrieval.vector_store.faiss_vector_store import (
     FAISSVectorStore,
 )
@@ -16,12 +16,12 @@ class ArtifactStorage:
     Directory layout:
 
     storage/
-        documents/
-            <document_id>/
-                structured_document.json
-                chunks.json
-                vector.index
-                mapping.pkl
+        <document_id>/
+            structured_document.json
+            chunks.json
+            vector.index
+            mapping.pkl
+            bm25_index.json
     """
 
     DOCUMENT_FILENAME = "structured_document.json"
@@ -81,7 +81,7 @@ class ArtifactStorage:
         ).exists()
 
     # ---------------------------------------------------------
-    # Structured document
+    # Structured Document
     # ---------------------------------------------------------
 
     def save_document(
@@ -201,22 +201,25 @@ class ArtifactStorage:
             exist_ok=True,
         )
 
-        vector_store.save(directory)
+        vector_store.save(
+            directory
+        )
 
     def load_vector_store(
-      self,
-       document_id: str,
-       vector_store: FAISSVectorStore,
+        self,
+        document_id: str,
+        vector_store: FAISSVectorStore,
     ) -> None:
 
-       directory = self._document_directory(
-        document_id
-    )
+        directory = self._document_directory(
+            document_id
+        )
 
-       vector_store.load_and_merge(
-        directory
-    )
-        # ---------------------------------------------------------
+        vector_store.load_and_merge(
+            directory
+        )
+
+    # ---------------------------------------------------------
     # BM25 Index
     # ---------------------------------------------------------
 
@@ -248,13 +251,14 @@ class ArtifactStorage:
         bm25_index: BM25Index,
     ) -> None:
         """
-        Load a persisted BM25 index.
+        Load a persisted BM25 index and merge it into
+        the existing in-memory index.
         """
 
         directory = self._document_directory(
             document_id
         )
 
-        bm25_index.load(
+        bm25_index.load_and_merge(
             directory
         )

@@ -15,8 +15,8 @@ class BM25Index:
     BM25 lexical search index.
 
     Wraps rank_bm25 and provides a clean interface for
-    building, searching, saving, loading and clearing
-    the index.
+    building, searching, saving, loading, merging and
+    clearing the index.
     """
 
     INDEX_FILENAME = "bm25_index.json"
@@ -61,11 +61,7 @@ class BM25Index:
                 )
             )
 
-        self._index = BM25Okapi(
-            corpus=self._tokenized_corpus,
-            k1=self._config.k1,
-            b=self._config.b,
-        )
+        self._rebuild_index()
 
     # ---------------------------------------------------------
     # Search
@@ -147,7 +143,8 @@ class BM25Index:
         directory: Path,
     ) -> None:
         """
-        Load a persisted BM25 index.
+        Load a persisted BM25 index and replace the
+        current in-memory index.
         """
 
         path = (
@@ -158,7 +155,7 @@ class BM25Index:
         artifact = (
             BM25IndexArtifact.model_validate_json(
                 path.read_text(
-                    encoding="utf-8",
+                    encoding="utf-8"
                 )
             )
         )
@@ -167,6 +164,57 @@ class BM25Index:
         self._tokenized_corpus = (
             artifact.tokenized_corpus
         )
+
+        self._rebuild_index()
+
+    def load_and_merge(
+        self,
+        directory: Path,
+    ) -> None:
+        """
+        Load a persisted BM25 index and merge it into
+        the current in-memory index.
+        """
+
+        path = (
+            directory
+            / self.INDEX_FILENAME
+        )
+
+        artifact = (
+            BM25IndexArtifact.model_validate_json(
+                path.read_text(
+                    encoding="utf-8"
+                )
+            )
+        )
+
+        self._chunk_ids.extend(
+            artifact.chunk_ids
+        )
+
+        self._tokenized_corpus.extend(
+            artifact.tokenized_corpus
+        )
+
+        self._rebuild_index()
+
+    # ---------------------------------------------------------
+    # Internal Helpers
+    # ---------------------------------------------------------
+
+    def _rebuild_index(
+        self,
+    ) -> None:
+        """
+        Rebuild the BM25 index from the current corpus.
+        """
+
+        if not self._tokenized_corpus:
+
+            self._index = None
+
+            return
 
         self._index = BM25Okapi(
             corpus=self._tokenized_corpus,
