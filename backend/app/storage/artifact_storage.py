@@ -2,7 +2,7 @@ from pathlib import Path
 
 from app.core.settings import get_settings
 from app.document.chunking.chunk_collection import ChunkCollection
-from app.models.structured_document import StructuredDocument
+from app.models.metadata import Metadata
 from app.retrieval.bm25.bm25_index import BM25Index
 from app.retrieval.vector_store.faiss_vector_store import (
     FAISSVectorStore,
@@ -17,14 +17,14 @@ class ArtifactStorage:
 
     storage/
         <document_id>/
-            structured_document.json
+            metadata.json
             chunks.json
             vector.index
             mapping.pkl
             bm25_index.json
     """
 
-    DOCUMENT_FILENAME = "structured_document.json"
+    METADATA_FILENAME = "metadata.json"
     CHUNKS_FILENAME = "chunks.json"
 
     def __init__(self) -> None:
@@ -81,14 +81,17 @@ class ArtifactStorage:
         ).exists()
 
     # ---------------------------------------------------------
-    # Structured Document
+    # Metadata
     # ---------------------------------------------------------
 
-    def save_document(
+    def save_metadata(
         self,
         document_id: str,
-        document: StructuredDocument,
+        metadata: Metadata,
     ) -> None:
+        """
+        Persist document metadata.
+        """
 
         directory = self._document_directory(
             document_id
@@ -101,33 +104,34 @@ class ArtifactStorage:
 
         path = (
             directory
-            / self.DOCUMENT_FILENAME
+            / self.METADATA_FILENAME
         )
 
         path.write_text(
-            document.model_dump_json(
+            metadata.model_dump_json(
                 indent=2
             ),
             encoding="utf-8",
         )
 
-    def load_document(
+    def load_metadata(
         self,
         document_id: str,
-    ) -> StructuredDocument:
+    ) -> Metadata:
+        """
+        Load document metadata.
+        """
 
         path = (
             self._document_directory(
                 document_id
             )
-            / self.DOCUMENT_FILENAME
+            / self.METADATA_FILENAME
         )
 
-        return (
-            StructuredDocument.model_validate_json(
-                path.read_text(
-                    encoding="utf-8"
-                )
+        return Metadata.model_validate_json(
+            path.read_text(
+                encoding="utf-8"
             )
         )
 

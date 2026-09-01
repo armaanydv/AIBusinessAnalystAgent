@@ -154,10 +154,10 @@ class IngestionService:
 
         document_id = document.metadata.document_id
 
-        # self._artifact_storage.save_document(
-        #     document_id=document_id,
-        #     document=document,
-        # )
+        self._artifact_storage.save_metadata(
+            document_id=document_id,
+            metadata=document.metadata,
+        )
 
         self._artifact_storage.save_chunks(
             document_id=document_id,
