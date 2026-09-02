@@ -1,4 +1,5 @@
 from pathlib import Path
+import shutil
 
 from app.core.settings import get_settings
 from app.document.chunking.chunk_collection import ChunkCollection
@@ -27,7 +28,9 @@ class ArtifactStorage:
     METADATA_FILENAME = "metadata.json"
     CHUNKS_FILENAME = "chunks.json"
 
-    def __init__(self) -> None:
+    def __init__(
+        self,
+    ) -> None:
 
         settings = get_settings()
 
@@ -79,6 +82,27 @@ class ArtifactStorage:
         return self._document_directory(
             document_id
         ).exists()
+
+    def delete_document(
+        self,
+        document_id: str,
+    ) -> None:
+        """
+        Delete all persisted artifacts for a document.
+        """
+
+        directory = self._document_directory(
+            document_id
+        )
+
+        if not directory.exists():
+            raise FileNotFoundError(
+                f"Document '{document_id}' does not exist."
+            )
+
+        shutil.rmtree(
+            directory
+        )
 
     # ---------------------------------------------------------
     # Metadata

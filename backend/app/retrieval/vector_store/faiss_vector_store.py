@@ -5,8 +5,13 @@ from pathlib import Path
 import faiss
 import numpy as np
 
-from app.retrieval.vector_store.base_vector_store import BaseVectorStore
-from app.retrieval.vector_store.vector_record import VectorRecord
+from app.retrieval.vector_store.base_vector_store import (
+    BaseVectorStore,
+)
+from app.retrieval.vector_store.vector_record import (
+    VectorRecord,
+)
+
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +35,9 @@ class FAISSVectorStore(BaseVectorStore):
         self.dimension = dimension
 
         # Cosine similarity using normalized vectors
-        self.index = faiss.IndexFlatIP(dimension)
+        self.index = faiss.IndexFlatIP(
+            dimension
+        )
 
         # FAISS index -> chunk id
         self.index_to_chunk: dict[int, str] = {}
@@ -55,13 +62,19 @@ class FAISSVectorStore(BaseVectorStore):
                 f"received {vector.shape[1]}."
             )
 
-        faiss.normalize_L2(vector)
+        faiss.normalize_L2(
+            vector
+        )
 
         current_index = self.index.ntotal
 
-        self.index.add(vector)
+        self.index.add(
+            vector
+        )
 
-        self.index_to_chunk[current_index] = record.chunk_id
+        self.index_to_chunk[
+            current_index
+        ] = record.chunk_id
 
         logger.debug(
             "Indexed chunk '%s'.",
@@ -81,7 +94,10 @@ class FAISSVectorStore(BaseVectorStore):
             return
 
         vectors = np.asarray(
-            [record.vector for record in records],
+            [
+                record.vector
+                for record in records
+            ],
             dtype=np.float32,
         )
 
@@ -91,11 +107,15 @@ class FAISSVectorStore(BaseVectorStore):
                 f"received {vectors.shape[1]}."
             )
 
-        faiss.normalize_L2(vectors)
+        faiss.normalize_L2(
+            vectors
+        )
 
         start_index = self.index.ntotal
 
-        self.index.add(vectors)
+        self.index.add(
+            vectors
+        )
 
         for offset, record in enumerate(records):
 
@@ -132,14 +152,21 @@ class FAISSVectorStore(BaseVectorStore):
                 f"received {vector.shape[1]}."
             )
 
-        faiss.normalize_L2(vector)
+        faiss.normalize_L2(
+            vector
+        )
 
         scores, indices = self.index.search(
             vector,
-            min(k, self.index.ntotal),
+            min(
+                k,
+                self.index.ntotal,
+            ),
         )
 
-        results: list[tuple[str, float]] = []
+        results: list[
+            tuple[str, float]
+        ] = []
 
         for score, index in zip(
             scores[0],
@@ -149,7 +176,9 @@ class FAISSVectorStore(BaseVectorStore):
             if index == -1:
                 continue
 
-            chunk_id = self.index_to_chunk.get(index)
+            chunk_id = self.index_to_chunk.get(
+                index
+            )
 
             if chunk_id is None:
                 continue
@@ -172,7 +201,9 @@ class FAISSVectorStore(BaseVectorStore):
         directory: str | Path,
     ) -> None:
 
-        directory = Path(directory)
+        directory = Path(
+            directory
+        )
 
         directory.mkdir(
             parents=True,
@@ -182,12 +213,14 @@ class FAISSVectorStore(BaseVectorStore):
         faiss.write_index(
             self.index,
             str(
-                directory / self.INDEX_FILENAME
+                directory
+                / self.INDEX_FILENAME
             ),
         )
 
         with open(
-            directory / self.MAPPING_FILENAME,
+            directory
+            / self.MAPPING_FILENAME,
             "wb",
         ) as file:
 
@@ -210,16 +243,20 @@ class FAISSVectorStore(BaseVectorStore):
         directory: str | Path,
     ) -> None:
 
-        directory = Path(directory)
+        directory = Path(
+            directory
+        )
 
         self.index = faiss.read_index(
             str(
-                directory / self.INDEX_FILENAME
+                directory
+                / self.INDEX_FILENAME
             )
         )
 
         with open(
-            directory / self.MAPPING_FILENAME,
+            directory
+            / self.MAPPING_FILENAME,
             "rb",
         ) as file:
 
@@ -232,57 +269,91 @@ class FAISSVectorStore(BaseVectorStore):
             directory,
         )
 
-           # ---------------------------------------------------------
-        # Load and Merge
-        # ---------------------------------------------------------
-        
+    # ---------------------------------------------------------
+    # Load and Merge
+    # ---------------------------------------------------------
+
     def load_and_merge(
-            self,
+        self,
         directory: str | Path,
-            ) -> None:
-              """
-               Loads another persisted FAISS index and merges it into the
-               current vector store.
-         
-                Existing vectors are preserved, allowing multiple documents
-            to be searched together.
-            """
-        
-              directory = Path(directory)
-        
-              loaded_index = faiss.read_index(
-                 str(
-                    directory / self.INDEX_FILENAME
-                )
+    ) -> None:
+        """
+        Load another persisted FAISS index and merge it
+        into the current vector store.
+
+        Existing vectors are preserved, allowing multiple
+        documents to be searched together.
+        """
+
+        directory = Path(
+            directory
+        )
+
+        loaded_index = faiss.read_index(
+            str(
+                directory
+                / self.INDEX_FILENAME
             )
-        
-              with open(
-                directory / self.MAPPING_FILENAME,
-                "rb",
-            ) as file:
-        
-                loaded_mapping: dict[int, str] = pickle.load(
-                    file
-                )
-        
-            # Offset where the new vectors will begin.
-                offset = self.index.ntotal
-        
-            # Merge the loaded index into the existing one.
-              self.index.merge_from(loaded_index)
-        
-            # Shift the mapping indices to match the merged index.
-              for index, chunk_id in loaded_mapping.items():
-                        self.index_to_chunk[
-                    index + offset
-                ] = chunk_id
-        
-              logger.info(
-                "Merged %d vectors from '%s'. Total vectors: %d",
-                loaded_index.ntotal,
-                directory,
-                self.index.ntotal,
+        )
+
+        with open(
+            directory
+            / self.MAPPING_FILENAME,
+            "rb",
+        ) as file:
+
+            loaded_mapping: dict[
+                int,
+                str,
+            ] = pickle.load(
+                file
             )
+
+        # Offset where the new vectors will begin
+        offset = self.index.ntotal
+
+        # Merge the loaded index
+        self.index.merge_from(
+            loaded_index
+        )
+
+        # Shift mapping indexes
+        for index, chunk_id in (
+            loaded_mapping.items()
+        ):
+
+            self.index_to_chunk[
+                index + offset
+            ] = chunk_id
+
+        logger.info(
+            "Merged %d vectors from '%s'. "
+            "Total vectors: %d",
+            loaded_index.ntotal,
+            directory,
+            self.index.ntotal,
+        )
+
+    # ---------------------------------------------------------
+    # Utilities
+    # ---------------------------------------------------------
+
+    def clear(
+        self,
+    ) -> None:
+        """
+        Remove all vectors from the in-memory index.
+        """
+
+        self.index = faiss.IndexFlatIP(
+            self.dimension
+        )
+
+        self.index_to_chunk.clear()
+
+        logger.info(
+            "Vector store cleared."
+        )
 
     # ---------------------------------------------------------
     # Properties
@@ -310,5 +381,3 @@ class FAISSVectorStore(BaseVectorStore):
             f"size={self.size}, "
             f"dimension={self.dimension})"
         )
-
- 

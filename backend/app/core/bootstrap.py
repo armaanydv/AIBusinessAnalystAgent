@@ -1,7 +1,9 @@
 from app.document.chunking.chunk_builder import ChunkBuilder
 from app.document.hierarchy.hierarchy_builder import HierarchyBuilder
 from app.document.indexing.index_builder import IndexBuilder
-from app.document.relationships.relationship_builder import RelationshipBuilder
+from app.document.relationships.relationship_builder import (
+    RelationshipBuilder,
+)
 
 from app.ingestion.ingestion_service import IngestionService
 from app.ingestion.parsers.docling_parser import DoclingParser
@@ -17,6 +19,9 @@ from app.prompting.rag_prompt_builder import (
     RAGPromptBuilder,
 )
 
+from app.services.knowledge_base_service import (
+    KnowledgeBaseService,
+)
 from app.services.rag_service import RAGService
 
 from app.retrieval.bm25.bm25_config import BM25Config
@@ -140,6 +145,51 @@ chunk_repository = ChunkRepository()
 
 
 # ==========================================================
+# Storage
+# ==========================================================
+
+artifact_storage = ArtifactStorage()
+
+
+# ==========================================================
+# Knowledge Base Service
+# ==========================================================
+
+knowledge_base_service = KnowledgeBaseService(
+    artifact_storage=artifact_storage,
+    chunk_repository=chunk_repository,
+    vector_store=vector_store,
+    bm25_index=bm25_index,
+)
+
+
+# ==========================================================
+# Restore Persisted Knowledge Base
+# ==========================================================
+
+try:
+
+    knowledge_base_service.restore()
+
+    loaded_documents = len(
+        artifact_storage.list_documents()
+    )
+
+    print(
+        f"[INFO] Restored "
+        f"{loaded_documents} document(s) "
+        f"containing {len(vector_store)} vectors."
+    )
+
+except Exception as exc:
+
+    print(
+        f"[WARNING] Failed to restore "
+        f"Knowledge Base: {exc}"
+    )
+
+
+# ==========================================================
 # Retrievers
 # ==========================================================
 
@@ -164,61 +214,6 @@ hybrid_retriever = HybridRetriever(
 
 reranker = CrossEncoderReranker(
     config=get_reranker_config(),
-)
-
-
-# ==========================================================
-# Storage
-# ==========================================================
-
-artifact_storage = ArtifactStorage()
-
-
-# ==========================================================
-# Restore Persisted Knowledge Base
-# ==========================================================
-
-loaded_documents = 0
-
-for document_id in artifact_storage.list_documents():
-
-    try:
-
-        artifact_storage.load_vector_store(
-            document_id=document_id,
-            vector_store=vector_store,
-        )
-
-        artifact_storage.load_bm25_index(
-            document_id=document_id,
-            bm25_index=bm25_index,
-        )
-
-        chunks = artifact_storage.load_chunks(
-            document_id=document_id,
-        )
-
-        chunk_repository.add_many(
-            chunks,
-        )
-
-        loaded_documents += 1
-
-        print(
-            f"[INFO] Restored document '{document_id}'."
-        )
-
-    except Exception as exc:
-
-        print(
-            f"[WARNING] Failed to restore "
-            f"'{document_id}': {exc}"
-        )
-
-print(
-    f"[INFO] Restored "
-    f"{loaded_documents} document(s) "
-    f"containing {len(vector_store)} vectors."
 )
 
 
@@ -279,18 +274,23 @@ retrieval_planner = RetrievalPlanner()
 comparative_analysis = ComparativeAnalysis(
     llm=llm,
 )
+
 trend_analysis = TrendAnalysis(
     llm=llm,
 )
+
 ranking_analysis = RankingAnalysis(
     llm=llm,
 )
+
 root_cause_analysis = RootCauseAnalysis(
     llm=llm,
 )
+
 contribution_analysis = ContributionAnalysis(
     llm=llm,
 )
+
 swot_analysis = SWOTAnalysis(
     llm=llm,
 )
