@@ -1,21 +1,23 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 
-from app.api.schemas.documents import (
-    DocumentListResponseSchema,
-    DocumentSummarySchema,
+from app.api.schemas.knowledge_base import (
+    KnowledgeBaseDocumentSchema,
+    KnowledgeBaseResponseSchema,
 )
 
-from app.core.bootstrap import artifact_storage
+from app.core.bootstrap import (
+    artifact_storage,
+)
 
 
 router = APIRouter()
 
 
 @router.get(
-    "/documents",
-    response_model=DocumentListResponseSchema,
+    "/knowledge-base",
+    response_model=KnowledgeBaseResponseSchema,
 )
-def list_documents():
+def get_knowledge_base():
     """
     Return all documents currently stored in the
     AIBA Knowledge Base.
@@ -40,7 +42,7 @@ def list_documents():
             )
 
             documents.append(
-                DocumentSummarySchema(
+                KnowledgeBaseDocumentSchema(
                     document_id=metadata.document_id,
                     document_name=document_name,
                     title=metadata.title,
@@ -55,7 +57,35 @@ def list_documents():
 
             continue
 
-    return DocumentListResponseSchema(
+    return KnowledgeBaseResponseSchema(
         documents=documents,
         total_documents=len(documents),
     )
+
+
+@router.delete(
+    "/knowledge-base/{document_id}",
+)
+def delete_knowledge_base_document(
+    document_id: str,
+):
+    """
+    Delete a document from the AIBA Knowledge Base.
+    """
+
+    if not artifact_storage.document_exists(
+        document_id
+    ):
+        raise HTTPException(
+            status_code=404,
+            detail="Document not found.",
+        )
+
+    artifact_storage.delete_document(
+        document_id
+    )
+
+    return {
+        "message": "Document deleted successfully.",
+        "document_id": document_id,
+    }

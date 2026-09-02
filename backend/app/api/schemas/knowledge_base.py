@@ -1,9 +1,9 @@
 from pydantic import BaseModel
 
 
-class DocumentSummarySchema(BaseModel):
+class KnowledgeBaseDocumentSchema(BaseModel):
     """
-    Summary information about a stored document.
+    Represents a document displayed in the AIBA Knowledge Base.
     """
 
     document_id: str
@@ -19,11 +19,11 @@ class DocumentSummarySchema(BaseModel):
     created_at: str | None = None
 
 
-class DocumentListResponseSchema(BaseModel):
+class KnowledgeBaseResponseSchema(BaseModel):
     """
-    Response containing stored document summaries.
+    Response containing all documents in the AIBA Knowledge Base.
     """
 
-    documents: list[DocumentSummarySchema]
+    documents: list[KnowledgeBaseDocumentSchema]
 
     total_documents: int
