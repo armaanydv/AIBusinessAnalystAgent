@@ -144,7 +144,7 @@ Every component is designed before implementation to ensure:
 * [x] Architecture v0.1
 * [x] Backend Skeleton
 * [X] PDF Parsing
-* [ ] Chunking Pipeline
+* [X] Chunking Pipeline
 * [ ] Embedding Service
 * [ ] Vector Store
 * [ ] Retrieval Pipeline
