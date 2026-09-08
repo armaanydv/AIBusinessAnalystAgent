@@ -145,7 +145,7 @@ Every component is designed before implementation to ensure:
 * [x] Backend Skeleton
 * [X] PDF Parsing
 * [X] Chunking Pipeline
-* [ ] Embedding Service
+* [X] Embedding Service
 * [ ] Vector Store
 * [ ] Retrieval Pipeline
 * [ ] Prompt Management
