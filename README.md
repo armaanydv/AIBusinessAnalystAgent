@@ -146,7 +146,7 @@ Every component is designed before implementation to ensure:
 * [X] PDF Parsing
 * [X] Chunking Pipeline
 * [X] Embedding Service
-* [ ] Vector Store
+* [X] Vector Store
 * [ ] Retrieval Pipeline
 * [ ] Prompt Management
 * [ ] Chat Engine
