@@ -147,7 +147,7 @@ Every component is designed before implementation to ensure:
 * [X] Chunking Pipeline
 * [X] Embedding Service
 * [X] Vector Store
-* [ ] Retrieval Pipeline
+* [X] Retrieval Pipeline
 * [ ] Prompt Management
 * [ ] Chat Engine
 * [ ] Frontend Dashboard
