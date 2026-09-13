@@ -142,7 +142,7 @@ Every component is designed before implementation to ensure:
 ## Roadmap
 
 * [x] Architecture v0.1
-* [x] Backend Skeleton
+* [X] Backend Skeleton
 * [X] PDF Parsing
 * [X] Chunking Pipeline
 * [X] Embedding Service
