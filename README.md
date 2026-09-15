@@ -96,10 +96,6 @@ This architecture emphasizes:
 * Validation layer
 * Ingestion service skeleton
 
-### In Progress
-
-* Document ingestion pipeline
-
 ### Planned
 
 * PDF Parser
