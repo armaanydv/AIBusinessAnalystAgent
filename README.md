@@ -59,7 +59,6 @@ This architecture emphasizes:
 * Single Responsibility Principle
 * Scalability
 * Maintainability
-* Modular Design
 
 ---
 
