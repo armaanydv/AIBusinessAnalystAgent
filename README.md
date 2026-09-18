@@ -57,7 +57,6 @@ This architecture emphasizes:
 
 * Separation of Concerns
 * Single Responsibility Principle
-* Scalability
 
 ---
 
