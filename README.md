@@ -56,7 +56,6 @@ LLM / Vector Store
 This architecture emphasizes:
 
 * Separation of Concerns
-* Single Responsibility Principle
 
 ---
 
