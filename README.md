@@ -26,7 +26,6 @@ Rather than being a simple chatbot, this project aims to become a modular AI pla
 * Multi-document comparison
 * Strategic recommendation generation
 * Source citation support
-* Modern dashboard interface
 
 ---
 
