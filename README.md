@@ -24,8 +24,7 @@ Rather than being a simple chatbot, this project aims to become a modular AI pla
 * Risk Analysis
 * Executive Summary Generation
 * Multi-document comparison
-* Strategic recommendation generation
-* Source citation support
+* Strategic recommendation genera
 
 ---
 
