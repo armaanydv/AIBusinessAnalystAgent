@@ -6,5 +6,4 @@ function Analysis() {
     </div>
   );
 }
-
 export default Analysis;

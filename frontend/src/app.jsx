@@ -1,9 +1,9 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 import AppLayout from "./components/layout/AppLayout";
-import Chat from "./pages/Chat";
-import KnowledgeBase from "./pages/KnowledgeBase";
-import Analysis from "./pages/Analysis";
+import Chat from "./pages/chat";
+import KnowledgeBase from "./pages/knowledgebase";
+import Analysis from "./pages/analysis";
 
 function App() {
   return (

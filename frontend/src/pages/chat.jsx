@@ -1,16 +1,10 @@
-import { Outlet } from "react-router-dom";
-import Sidebar from "./Sidebar";
-
-function AppLayout() {
+function Chat() {
   return (
-    <div className="app-layout">
-      <Sidebar />
-
-      <main className="main-content">
-        <Outlet />
-      </main>
+    <div>
+      <h1>Chat</h1>
+      <p>Ask questions about your business data.</p>
     </div>
   );
 }
 
-export default AppLayout;
+export default Chat;
