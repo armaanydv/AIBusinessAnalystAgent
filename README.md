@@ -21,7 +21,6 @@ Rather than being a simple chatbot, this project aims to become a modular AI pla
 * AI-powered business Q&A
 * SWOT Analysis
 * KPI Extraction
-* Risk Analysis
 
 ---
 
