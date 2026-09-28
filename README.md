@@ -20,7 +20,6 @@ Rather than being a simple chatbot, this project aims to become a modular AI pla
 * Retrieval-Augmented Generation (RAG)
 * AI-powered business Q&A
 * SWOT Analysis
-* KPI Extraction
 
 ---
 
