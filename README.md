@@ -14,7 +14,6 @@ Rather than being a simple chatbot, this project aims to become a modular AI pla
 
 * Intelligent document ingestion
 * PDF parsing and structured document extraction
-* Semantic chunking
 
 ---
 
