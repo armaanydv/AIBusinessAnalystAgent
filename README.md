@@ -12,7 +12,6 @@ Rather than being a simple chatbot, this project aims to become a modular AI pla
 
 ## Planned Features
 
-* Intelligent document ingestion
 
 ---
 
