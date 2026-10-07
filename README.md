@@ -8,12 +8,6 @@ The goal of this project is to build an intelligent business analyst capable of 
 
 Rather than being a simple chatbot, this project aims to become a modular AI platform capable of performing advanced business analysis.
 
----
-
-
-
----
-
 ## Architecture
 
 Current architecture follows a layered design:
