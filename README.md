@@ -4,7 +4,6 @@ An enterprise-grade AI platform that transforms business documents into actionab
 
 ## Vision
 
-The goal of this project is to build an intelligent business analyst capable of understanding annual reports, financial statements, market research documents, and other business reports to generate strategic insights through natural language interaction.
 
 ```text
 User
