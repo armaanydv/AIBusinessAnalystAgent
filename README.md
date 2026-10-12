@@ -16,10 +16,7 @@ Service Layer
 Validation Layer
 │
 ▼
-Business Modules
-│
-▼
-LLM / Vector Store
+
 ```
 
 ---
