@@ -13,9 +13,6 @@ API Layer
 Service Layer
 │
 ▼
-Validation Layer
-│
-▼
 
 ```
 
