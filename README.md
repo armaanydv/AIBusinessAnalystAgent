@@ -10,11 +10,7 @@ User
 API Layer
 │
 ▼
-Service Layer
-│
-▼
 
-```
 
 ---
 
