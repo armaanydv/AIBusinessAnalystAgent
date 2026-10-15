@@ -7,9 +7,6 @@ An enterprise-grade AI platform that transforms business documents into actionab
 User
 │
 ▼
-API Layer
-│
-▼
 
 
 ---
