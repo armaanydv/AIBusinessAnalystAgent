@@ -1,7 +1,3 @@
-# AI Business Analyst Platform
-
-An enterprise-grade AI platform that transforms business documents into actionable insights using Retrieval-Augmented Generation (RAG), Large Language Models (LLMs), and modern AI engineering practices
-
 ## Technology Stack
 
 ### Backend
