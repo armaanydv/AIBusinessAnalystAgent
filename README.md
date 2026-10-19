@@ -1,9 +1,4 @@
-## Technology Stack
 
-### Backend
-
-* Python
-* FastAPI
 
 ### AI
 
