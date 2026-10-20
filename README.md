@@ -7,12 +7,7 @@
 * FAISS
 * Embedding Models
 
-### Frontend
 
-* React 
-* Next.js 
-
----
 
 ## Current Project Status
 
