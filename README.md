@@ -1,11 +1,5 @@
 
 
-### AI
-
-* Large Language Models (LLMs)
-* Retrieval-Augmented Generation (RAG)
-* FAISS
-* Embedding Models
 
 
 
