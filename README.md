@@ -12,8 +12,7 @@
 * FastAPI setup
 * API routing
 * Service layer
-* Validation layer
-* Ingestion service skeleton
+
 
 ### Planned
 
