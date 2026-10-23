@@ -7,12 +7,6 @@
 
 ### Completed
 
-* Project architecture design
-* Backend structure
-* FastAPI setup
-* API routing
-* Service layer
-
 
 ### Planned
 
