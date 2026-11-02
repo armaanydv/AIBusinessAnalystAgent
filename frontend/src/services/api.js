@@ -3,7 +3,9 @@ const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
 
 /**
- * Centralized response handler for all backend requests.
+ * CENTRALIZED RESPONSE HANDLER
+ *
+ * Handles JSON responses, text responses, and API errors.
  */
 async function handleResponse(response) {
   const responseText = await response.text();
@@ -90,6 +92,25 @@ export async function sendChatMessage(query, topK = 5) {
     body: JSON.stringify({
       query,
       top_k: topK,
+    }),
+  });
+
+  return handleResponse(response);
+}
+
+/**
+ * BUSINESS ANALYSIS API
+ */
+
+// Submit a business analysis query.
+export async function analyzeBusiness(query) {
+  const response = await fetch(`${API_BASE_URL}/analysis`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      query,
     }),
   });
 
