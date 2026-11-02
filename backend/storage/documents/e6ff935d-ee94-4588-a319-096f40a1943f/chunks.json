@@ -1,0 +1,168 @@
+{
+  "chunks": [
+    {
+      "id": "29d14f87-87e8-4ef1-9f12-d9bde125081c",
+      "title": "AIBA Business Performance Report",
+      "text": "# AIBA Business Performance Report\n\nFictional test dataset for the AI Business Analyst Agent Reporting period: Q1 2026 through Q3 2026",
+      "source_element_ids": [
+        "e89841c4-3dfd-470d-a9ac-756fc4add81d",
+        "be85337e-37bf-4211-b1a2-eea3a21e6459"
+      ],
+      "metadata": {
+        "source_document": "e6ff935d-ee94-4588-a319-096f40a1943f",
+        "start_page": 1,
+        "end_page": 1,
+        "hierarchy_level": 1,
+        "token_count": null,
+        "character_count": 134
+      }
+    },
+    {
+      "id": "93e8e0fd-1d2d-4646-96e2-976bb15879e4",
+      "title": "1. Executive Summary",
+      "text": "# 1. Executive Summary\n\nAcme Retail Solutions is a fictional multi-region business used to test retrieval, comparative analysis, trend analysis, and other analytical capabilities of AIBA. The company operates in North, South, East, and West regions.\n\nTotal revenue increased from Q2 2026 to Q3 2026, while operating expenses also increased. North remained the largest revenue-producing region, while West recorded the fastest regional revenue growth between Q2 and Q3.",
+      "source_element_ids": [
+        "4455dcf8-bd5d-46ba-8fd3-ae15084fb83e",
+        "d5087d19-052d-454f-9288-59539b876be0",
+        "0d2d6500-5bbb-4ec2-b748-ebe106743c6c"
+      ],
+      "metadata": {
+        "source_document": "e6ff935d-ee94-4588-a319-096f40a1943f",
+        "start_page": 1,
+        "end_page": 1,
+        "hierarchy_level": 1,
+        "token_count": null,
+        "character_count": 468
+      }
+    },
+    {
+      "id": "96a4a47e-900f-4870-a6e5-c6611bbb66e4",
+      "title": "2. Quarterly Company Performance",
+      "text": "# 2. Quarterly Company Performance\n\nQuarter | Revenue ($M) | Operating Expenses ($M) | Operating Profit ($M) | Customers | Orders\nQ1 2026 | 8.40 | 5.90 | 2.50 | 4,800 | 9,600\nQ2 2026 | 9.20 | 6.20 | 3.00 | 5,150 | 10,300\nQ3 2026 | 10.80 | 6.90 | 3.90 | 5,850 | 11,700",
+      "source_element_ids": [
+        "5eb1176b-efcd-49b6-af82-9080759e6bad",
+        "6cdc1c4b-f0c6-41b5-b6eb-2297e8807890"
+      ],
+      "metadata": {
+        "source_document": "e6ff935d-ee94-4588-a319-096f40a1943f",
+        "start_page": 1,
+        "end_page": 1,
+        "hierarchy_level": 1,
+        "token_count": null,
+        "character_count": 267
+      }
+    },
+    {
+      "id": "1f951532-93a6-442b-a76b-c9bf30025ece",
+      "title": "3. Regional Revenue Performance",
+      "text": "# 3. Regional Revenue Performance\n\nRegion | Q1 Revenue ($M) | Q2 Revenue ($M) | Q3 Revenue ($M)\nNorth | 2.40 | 2.70 | 3.10\nSouth | 2.10 | 2.30 | 2.60\nEast | 1.90 | 2.00 | 2.30\nWest | 2.00 | 2.20 | 2.80",
+      "source_element_ids": [
+        "5e3d3087-b0de-44b8-9469-a91f399f20e6",
+        "af59205e-6522-4973-9071-80dc0af976e3"
+      ],
+      "metadata": {
+        "source_document": "e6ff935d-ee94-4588-a319-096f40a1943f",
+        "start_page": 1,
+        "end_page": 1,
+        "hierarchy_level": 1,
+        "token_count": null,
+        "character_count": 201
+      }
+    },
+    {
+      "id": "9a110ab5-e179-4f61-b787-6045968b6e34",
+      "title": "4. Product Performance",
+      "text": "# 4. Product Performance\n\nProduct | Q1 Revenue ($M) | Q2 Revenue ($M) | Q3 Revenue ($M) | Q3 Units Sold\nAnalytics Pro | 2.70 | 3.00 | 3.60 | 1,800\nBusiness Suite | 2.40 | 2.70 | 3.10 | 1,550\nData Connect | 1.80 | 1.90 | 2.20 | 1,420\nCloud Reports | 1.50 | 1.60 | 1.90 | 1,900",
+      "source_element_ids": [
+        "9ceb5010-c3bc-45fc-85f3-89d289610eb8",
+        "e3223339-eb9b-4d3e-893e-54e3fb8685d7"
+      ],
+      "metadata": {
+        "source_document": "e6ff935d-ee94-4588-a319-096f40a1943f",
+        "start_page": 1,
+        "end_page": 1,
+        "hierarchy_level": 1,
+        "token_count": null,
+        "character_count": 275
+      }
+    },
+    {
+      "id": "11d65eb4-9f64-466b-87b7-be6ad5a00e8c",
+      "title": "5. Quarterly Operating Expenses",
+      "text": "# 5. Quarterly Operating Expenses\n\nExpense Category | Q1 ($M) | Q2 ($M) | Q3 ($M) | Q2 to Q3 Change\nPersonnel | 2.80 | 2.95 | 3.20 | +0.25\n\nExpense Category | Q1 ($M) | Q2 ($M) | Q3 ($M) | Q2 to Q3 Change\nMarketing | 1.10 | 1.25 | 1.45 | +0.20\nTechnology | 0.90 | 1.00 | 1.15 | +0.15\nOperations | 0.70 | 0.75 | 0.85 | +0.10\nOther | 0.40 | 0.25 | 0.25 | 0.00",
+      "source_element_ids": [
+        "ad35b075-41dd-46cc-b015-93ea40a1da41",
+        "26ffc809-ff5d-4eae-a96f-ea6426e42f00",
+        "f2b05ab1-e20a-4a60-8b5d-0e8c27e5e9f8"
+      ],
+      "metadata": {
+        "source_document": "e6ff935d-ee94-4588-a319-096f40a1943f",
+        "start_page": 1,
+        "end_page": 2,
+        "hierarchy_level": 1,
+        "token_count": null,
+        "character_count": 357
+      }
+    },
+    {
+      "id": "4ac9d286-8c10-4613-941d-6ac9d0ea4e89",
+      "title": "6. Customer Metrics",
+      "text": "# 6. Customer Metrics\n\nActive customers were 4,800 in Q1, 5,150 in Q2, and 5,850 in Q3. The customer retention rate was 88% in Q1, 89% in Q2, and 91% in Q3. The average order value was $875 in Q1, $893 in Q2, and $923 in Q3.",
+      "source_element_ids": [
+        "0dc36183-f5b5-42e3-8487-f93366bffd16",
+        "9815d346-2abd-48de-86e9-f03a8f7892a8"
+      ],
+      "metadata": {
+        "source_document": "e6ff935d-ee94-4588-a319-096f40a1943f",
+        "start_page": 2,
+        "end_page": 2,
+        "hierarchy_level": 1,
+        "token_count": null,
+        "character_count": 224
+      }
+    },
+    {
+      "id": "e409d0e2-141f-4c64-9d0f-5b81c4286990",
+      "title": "7. Management Notes",
+      "text": "# 7. Management Notes\n\nManagement attributed the Q3 revenue increase to stronger enterprise demand, higher customer retention, and improved performance in the West region.\n\nMarketing spending increased in Q3 to support enterprise acquisition campaigns. Technology spending also increased because of investments in reporting infrastructure.\n\nThe company plans to focus on North and West expansion in Q4 while maintaining customer retention initiatives across all regions.",
+      "source_element_ids": [
+        "5cccbe36-5556-4cb4-88fb-0260625e4714",
+        "8492f2e3-8733-4370-b84b-ce2c109f406b",
+        "f88f9cb7-2120-4663-9095-78d3c35349d5",
+        "110cdbbb-3bfb-412a-b52d-506cdc4b4941"
+      ],
+      "metadata": {
+        "source_document": "e6ff935d-ee94-4588-a319-096f40a1943f",
+        "start_page": 2,
+        "end_page": 2,
+        "hierarchy_level": 1,
+        "token_count": null,
+        "character_count": 470
+      }
+    },
+    {
+      "id": "ed6d9798-2a6a-4184-9520-9efa3bde19bf",
+      "title": "8. Test Questions for AIBA",
+      "text": "# 8. Test Questions for AIBA\n\n· Compare total revenue in Q3 2026 with Q2 2026.\n\n· Compare North region revenue in Q3 2026 with Q2 2026.\n\n· Which region had the largest revenue growth from Q2 to Q3?\n\n· Compare operating profit between Q2 and Q3.\n\n· What was the percentage change in total customers from Q2 to Q3?\n\n· Which product generated the highest revenue in Q3?\n\n· Compare Q3 marketing expense with Q2 marketing expense.\n\n· What trends can be observed in revenue and operating profit from Q1 to Q3?",
+      "source_element_ids": [
+        "84e08032-bc1e-4e39-ae0f-6095a6bfa223",
+        "919ba2c1-216a-4c1a-988b-fd2e929f8e59",
+        "b9678f53-3812-432c-b505-5f63b9fbda90",
+        "52d13fb0-c38e-4fdb-8415-008d51673325",
+        "5e1c988e-1a52-4dfb-82f8-7669d9612884",
+        "7518d42e-4e9a-4546-91e7-df6dad18196a",
+        "d8ca2db8-6818-4bbb-b347-8cb7955fcedd",
+        "676de1e4-8136-41b6-bc02-731051ca36ac",
+        "61fcbcd0-4b84-4402-9009-305000c2e707"
+      ],
+      "metadata": {
+        "source_document": "e6ff935d-ee94-4588-a319-096f40a1943f",
+        "start_page": 2,
+        "end_page": 2,
+        "hierarchy_level": 1,
+        "token_count": null,
+        "character_count": 503
+      }
+    }
+  ]
+}
