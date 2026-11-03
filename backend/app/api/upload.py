@@ -1,3 +1,4 @@
+import asyncio
 from pathlib import Path
 import os
 import tempfile
@@ -56,11 +57,13 @@ async def upload_document(
             temp_path = temp_file.name
 
         # ---------------------------------------------------------
-        # Run ingestion pipeline
+        # Run ingestion pipeline in thread pool to prevent blocking
+        # the asyncio event loop during heavy CPU processing
         # ---------------------------------------------------------
 
-        document, chunks = ingestion_service.ingest(
-            temp_path
+        document, chunks = await asyncio.to_thread(
+            ingestion_service.ingest,
+            temp_path,
         )
 
         # ---------------------------------------------------------
@@ -79,7 +82,8 @@ async def upload_document(
         # Persist updated metadata
         # ---------------------------------------------------------
 
-        artifact_storage.save_metadata(
+        await asyncio.to_thread(
+            artifact_storage.save_metadata,
             document_id=document.metadata.document_id,
             metadata=document.metadata,
         )

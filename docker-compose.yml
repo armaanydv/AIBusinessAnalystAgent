@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: aiba-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - STORAGE_ROOT_DIRECTORY=/app/storage/documents
+      - HF_HOME=/app/cache/huggingface
+      - TORCH_HOME=/app/cache/torch
+      - CORS_ORIGINS=http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173
+    env_file:
+      - path: ./backend/.env
+        required: false
+    volumes:
+      # Persistent storage volume so uploaded documents and FAISS indices persist across container rebuilds
+      - aiba_documents:/app/storage/documents
+      # Persistent cache volume so Hugging Face models are not re-downloaded on container restart
+      - aiba_model_cache:/app/cache
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_BASE_URL=http://localhost:8000
+    container_name: aiba-frontend
+    restart: unless-stopped
+    ports:
+      - "5173:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  aiba_documents:
+    name: aiba_documents_data
+  aiba_model_cache:
+    name: aiba_model_cache_data
