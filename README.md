@@ -319,18 +319,26 @@ AIBusinessAnalystAgent/
 │   ├── src/
 │   │   ├── assets/
 │   │   ├── components/
-│   │   │   └── layout/
-│   │   │       ├── AppLayout.jsx
-│   │   │       ├── Header.jsx
-│   │   │       └── Sidebar.jsx
+│   │   │   ├── layout/
+│   │   │   │   ├── AppLayout.jsx
+│   │   │   │   ├── Header.jsx
+│   │   │   │   └── Sidebar.jsx
+│   │   │   └── ui/
+│   │   │       └── ConfirmModal.jsx
 │   │   ├── hooks/
 │   │   ├── pages/
-│   │   │   ├── analysis.jsx
-│   │   │   ├── analysis.css
+│   │   │   ├── LandingPage.jsx
+│   │   │   ├── landing.css
+│   │   │   ├── Dashboard.jsx
 │   │   │   ├── chat.jsx
 │   │   │   ├── chat.css
+│   │   │   ├── analysis.jsx
+│   │   │   ├── analysis.css
 │   │   │   ├── knowledgebase.jsx
-│   │   │   └── knowledge-base.css
+│   │   │   ├── knowledge-base.css
+│   │   │   ├── Reports.jsx
+│   │   │   ├── Architecture.jsx
+│   │   │   └── Settings.jsx
 │   │   ├── services/
 │   │   │   └── api.js
 │   │   ├── styles/
@@ -345,9 +353,7 @@ AIBusinessAnalystAgent/
 └── README.md
 ```
 
-The frontend is undergoing a redesign. The planned futuristic landing
-page, expanded workspace, reports, and settings should be considered
-roadmap items until implemented.
+The frontend provides a futuristic public landing page and comprehensive workspace suite with real-time RAG diagnostics, persistent reports, and multi-framework business analysis.
 
 ------------------------------------------------------------------------
 
@@ -824,17 +830,18 @@ planned should not be interpreted as implemented.
 -   [x] AI Chat frontend integration
 -   [x] Business Analysis frontend integration
 
-### Planned frontend evolution
+### Completed frontend evolution
 
--   [ ] Futuristic public landing page
--   [ ] Features and About pages
--   [ ] Redesigned workspace dashboard
--   [ ] Futuristic Chat interface
--   [ ] Redesigned Knowledge Base experience
--   [ ] Redesigned Business Analysis experience
--   [ ] Reports interface and report persistence
--   [ ] Settings and application preferences
--   [ ] Responsive layouts and accessibility improvements
+-   [x] Futuristic public landing page with interactive pipeline preview & framework tabs
+-   [x] Features, capabilities showcase, and FAQ
+-   [x] Redesigned executive workspace dashboard
+-   [x] Futuristic AI Chat interface with citation inspection & chat export
+-   [x] Redesigned Knowledge Base experience with drag-and-drop & grid/table views
+-   [x] Redesigned Business Analysis studio with framework presets & export
+-   [x] Reports interface with local storage persistence and markdown download
+-   [x] Methodology & RAG pipeline explorer with live API latency testing
+-   [x] Settings, API endpoint configuration, and cache management
+-   [x] Responsive layouts with Lucide iconography and Plus Jakarta Sans typography
 
 ### Planned platform hardening
 
